@@ -35,7 +35,8 @@ Discuss what you need to develop this project. This includes background informat
 
 ## Collaborators
 
-Shivi Choudhary
+- Shivi Choudhary
+- Roland Guy
 
 <div align="center">
 
