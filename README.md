@@ -37,6 +37,7 @@ Discuss what you need to develop this project. This includes background informat
 
 - Shivi Choudhary
 - Roland Guy
+- Lian Welch
 
 <div align="center">
 
