@@ -39,6 +39,7 @@ Discuss what you need to develop this project. This includes background informat
 - Roland Guy
 - Lian Welch
 - Michael Zavinouski
+- Rayhona Nasimova
 
 <div align="center">
 
