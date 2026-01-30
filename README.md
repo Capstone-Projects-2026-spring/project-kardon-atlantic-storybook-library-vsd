@@ -35,15 +35,9 @@ Discuss what you need to develop this project. This includes background informat
 
 ## Collaborators
 
-- Shivi Choudhary
-- Roland Guy
-- Lian Welch
-- Michael Zavinouski
-- Rayhona Nasimova
-
 <div align="center">
 
 [//]: # (Replace with your collaborators)
-[Ian Tyler Applebaum](https://github.com/ApplebaumIan) • [Kyle Dragon Lee](https://github.com/leekd99)
+[Michael Zavinouski](https://github.com/tul39810) • [Shivi Choudhary](https://github.com/shivichoudhary) • [Roland Guy](https://github.com/RolandG369) • [Lian Welch](https://github.com/LianW9) • [Rayhona Nasimova](https://github.com/nasimovars) • [Nick Lolli](https://github.com/NickLolli)
 
 </div>
