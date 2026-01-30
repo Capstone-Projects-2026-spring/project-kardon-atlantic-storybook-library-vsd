@@ -35,6 +35,13 @@ Discuss what you need to develop this project. This includes background informat
 
 ## Collaborators
 
+- Shivi Choudhary
+- Roland Guy
+- Lian Welch
+- Michael Zavinouski
+- Rayhona Nasimova
+- Nick Lolli
+
 <div align="center">
 
 [//]: # (Replace with your collaborators)
