@@ -12,7 +12,7 @@ Use Case 1 - Account Creation (User / Caretaker)
   3. The user enters username, email, and password
   4. The system checks the input and creates the account.
   5. The system confirms registration.
-  6. The user is redirected to their home/library page/.
+  6. The user is redirected to their home/library page.
 
 Use Case 2 - Signing In (User / Caretaker)
 
