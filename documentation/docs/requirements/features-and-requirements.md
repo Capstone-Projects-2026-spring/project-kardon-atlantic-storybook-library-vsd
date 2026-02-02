@@ -10,6 +10,9 @@ sidebar_position: 4
 - The caretaker can select and store objects with the book
 - The caretaker can add comments to pages
 - The caretaker can save new learned words as custom buttons
+### Language Accessibility
+- The system allows for text to speech for reading books
+- The system allows changes in language for text to speech
 ### Book Management
 - System allows caretakers to upload storybooks and save them to their personal library
 - System allows users to open existing books saved to their personal library
@@ -22,9 +25,6 @@ sidebar_position: 4
 - System allows for caretaker to create account
 - System allows users to log in and out
 - System maintains user sessions unless user logs out or closes the app
-### Language Accessibility
-- The system allows for text to speech for reading books
-- The system allows changes in language for text to speech
 
 ## Nonfunctional Requirements
 ### Performance
