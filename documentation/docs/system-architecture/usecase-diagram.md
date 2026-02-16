@@ -191,4 +191,96 @@ sequenceDiagram
 ## Use Case 6 – Pick and Read a Book (Reader / AAC User)
 
 **Goal**: As a user, I want to be able to pick and read a book from my library.
+---
+## Use Case 7 – Play Text-To-Speech Audio (Reader / AAC User)
 
+**Goal**: As a reader, I want to hear the words read out loud.
+
+```mermaid
+sequenceDiagram
+    participant User as Reader / AAC User
+    participant App as Application/Frontend
+    participant TTS as Text-to-Speech Service
+    Note over User,App: User is in Read Mode viewing a page with hotspots
+    User->>App: Select / tap a VSD object (hotspot)
+    App->>TTS: Trigger speech synthesis with word from hotspot
+    activate TTS
+    TTS-->>User: Play audio of the word
+    deactivate TTS
+    alt Repeat audio
+        User->>App: Tap / click the same object again
+        App->>TTS: Re-trigger speech (same word)
+        TTS-->>User: Replay audio
+    end
+```
+---
+
+## Use Case 8 – Export and Share Books (User / Caretaker)
+
+**Goal**: As a user, I want to share and export my storybooks.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application/Frontend
+    participant Backend as Server/Backend
+    participant DB as Database
+    participant Storage as File Storage
+    Note over User,App: User is authenticated and on library view
+    User->>App: Select a saved book
+    App-->>User: Show book options menu
+    User->>App: Select "Export" or "Share"
+    alt Export as file
+        App->>+Backend: POST /books/{bookId}/export {format: "pdf"|"json"}
+        activate Backend
+        Backend->>DB: Fetch full book data (pages, hotspots, etc.)
+        DB-->>Backend: Book content
+        Backend->>Storage: Generate bundled file (PDF export or JSON archive)
+        Storage-->>Backend: File URL / blob
+        Backend-->>-App: 200 OK + download URL
+        deactivate Backend
+        App->>User: Trigger browser download
+    else Share with another user
+        App->>+Backend: POST /books/{bookId}/share {recipientEmail or userId}
+        Backend->>DB: Create shared_books record or generate share link
+        DB-->>Backend: Share entry / token
+        Backend-->>-App: 200 OK + share link
+        App-->>User: Copy link to clipboard or send via email/in-app
+    end
+```
+---
+## Use Case 9 – Close Application (User)
+
+**Goal**: As a user, I want to log out or exit the application.
+
+```mermaid
+
+sequenceDiagram
+    participant User
+    participant App as Application/Frontend
+    participant Backend as Server/Backend
+    participant DB as Database
+    alt Log Out
+        User->>App: Select "Log Out" from menu
+        App->>+Backend: POST /auth/logout (or revoke session)
+        activate Backend
+        Backend->>DB: Invalidate session / token (if server-side)
+        DB-->>Backend: Success
+        Backend-->>-App: 200 OK
+        deactivate Backend
+        App->>App: Clear local storage / session state
+        App-->>User: Redirect to landing page
+    else Close application (browser/tab close)
+        User->>App: Close browser tab / window
+        App->>App: Trigger beforeunload event (if supported)
+        opt Save unsaved progress
+            App->>+Backend: PATCH /books/{currentBookId} {autosave data}
+            Backend->>DB: Update book/pages/hotspots
+            DB-->>Backend: Save successful
+            Backend-->>-App: 200 OK
+        end
+        App->>App: End session gracefully
+    end
+
+```
+---
