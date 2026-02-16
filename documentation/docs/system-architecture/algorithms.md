@@ -10,9 +10,11 @@ sidebar_position: 6
 2. Iterates through VSD objects on current page
 3. Checks if click is inside the object's region
 
-Given (x,y) as top left corner, w = width, and h = height 
+Given (x,y) as top left corner, w = width, and h = height
 
+```
 If x1 >= x and x1 <= x + w and x1 >= y and y1 <= y + h
+```
 
 Then the click was inside the object's region, trigger the text-to-speech
 
@@ -40,7 +42,7 @@ hash(inputPassword) == storedHash
 1. Server generates JSON Web Token
 2. Token signed using secret key
 3. Client stores token
-4. API request that includes Authorization: Bearer <JWT>
+4. API request that includes `Authorization: Bearer <JWT>`
 Server takes care of signature validity and expiration timestamp
 
 ### Database Query
