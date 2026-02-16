@@ -11,7 +11,7 @@
 
 ## Keywords
 
-Section #, as well as any words that quickly give your peers insights into the application like programming language, development platform, type of application, etc.
+The frontend of the application will be built using JavaScript, React, HTML, and CSS. React will be used to create reusable UI components and manage application state, while JavaScript, HTML, and CSS will support user interactions, layout, and accessibility features.
 
 ## Project Abstract
 
