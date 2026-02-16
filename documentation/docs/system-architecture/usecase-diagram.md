@@ -190,6 +190,44 @@ sequenceDiagram
 ## Use Case 6 – Pick and Read a Book (Reader / AAC User)
 
 **Goal**: As a user, I want to be able to pick and read a book from my library.
+
+```mermaid
+sequenceDiagram
+    participant User as Reader / AAC User
+    participant App as Application/Frontend
+    participant Backend as Server/Backend
+    participant DB as Database
+    participant TTS as Text-to-Speech Service
+
+    Note over User,App: User is authenticated and on Library page
+
+    User->>App: Select a book from library
+    App->>+Backend: GET /books/{bookId}?include=pages,hotspots
+    activate Backend
+    Backend->>DB: Retrieve book, pages, hotspots, vocabulary
+    DB-->>Backend: Return structured book data
+    Backend-->>-App: 200 OK + full book JSON
+    deactivate Backend
+
+    App-->>User: Display first page in Read Mode
+
+    User->>App: Flip to next page
+    App->>App: Render next page locally
+
+    User->>App: Tap hotspot (e.g., "cat")
+    App->>TTS: Request audio for vocabulary word
+    TTS-->>App: Return audio stream
+    App-->>User: Play vocabulary audio
+
+    alt User uses Talk-to-Text
+        User->>App: Activate speech input
+        App->>App: Capture voice input
+        App-->>User: Highlight matching vocabulary
+    end
+
+    User->>App: Close book
+    App-->>User: Return to library view
+```
 ---
 ## Use Case 7 – Play Text-To-Speech Audio (Reader / AAC User)
 
