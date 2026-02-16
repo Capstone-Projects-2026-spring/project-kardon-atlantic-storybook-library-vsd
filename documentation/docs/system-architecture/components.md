@@ -77,12 +77,12 @@ REST Endpoints
 Protocol: HTTPS
 
 Data format: JSON
-- GET /books retrieve user books
-- POST /books create new book
-- PUT /books/{id} update book
-- DELETE /books/{id} delete book
-- GET /pages?book_id=eq.uuid get pages
-- POST /vsd_objects create annotation
+- `GET /books` retrieve user books
+- `POST /books` create new book
+- `PUT /books/{id}` update book
+- `DELETE /books/{id}` delete book
+- `GET /pages?book_id=eq.uuid` get pages
+- `POST /vsd_objects` create annotation
 Protocol: WebSocket
 ```json
 channel("book-updates")
