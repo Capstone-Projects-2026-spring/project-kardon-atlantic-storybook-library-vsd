@@ -135,7 +135,6 @@ sequenceDiagram
     DB-->>Backend: Save successful
     Backend-->>-App: 200 OK
     App-->>User: Show save confirmation
-    App->>DB: Refresh library view (optional sync)
 
 ```
 ---
