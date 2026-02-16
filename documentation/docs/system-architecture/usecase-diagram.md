@@ -228,7 +228,7 @@ sequenceDiagram
 
     User->>App: Close book
     App-->>User: Return to library view
-
+```
 ---
 ## Use Case 7 – Play Text-To-Speech Audio (Reader / AAC User)
 
