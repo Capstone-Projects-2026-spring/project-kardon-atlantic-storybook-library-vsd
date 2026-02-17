@@ -47,7 +47,7 @@ Use Case 5 - Save and Manage Storybook Library (User / Caretaker)
   1. The user selects “Save Book.”
   2. System will store the story book in the user’s library.
   3. The user can reopen the books anytime.
-  4. The user can rename, edit, or delete saved books.
+  4. The user can rename, edit existing objects, or delete saved books.
 
 Use Case 6 - Pick and Read a Book (Reader / AAC User)
 
