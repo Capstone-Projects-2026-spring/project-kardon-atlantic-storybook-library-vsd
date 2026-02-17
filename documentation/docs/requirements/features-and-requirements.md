@@ -6,10 +6,11 @@ sidebar_position: 4
 
 ## Functional Requirements
 ### Customization
+- The caretaker can upload files to be saved as a storybook
 - The caretaker can open VSD in edit mode
 - The caretaker can select and store objects with the book
-- The caretaker can add comments to pages
-- The caretaker can save new learned words as custom buttons
+- The caretaker can type and save vocabulary with objects
+- The caretaker can add annotations or notes to pages
 ### Language Accessibility
 - The system allows for text to speech for reading books
 - The system allows changes in language for text to speech
