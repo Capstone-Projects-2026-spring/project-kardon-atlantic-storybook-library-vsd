@@ -34,6 +34,7 @@ Time Complexity = O(1)
 1. Compare previous componentree with new tree
 2. Compute minimal changes
 3. Apply batched document object model (DOM) updates
+
 Time Complexity = O(n)
 
 ### Authentication and Security
@@ -43,15 +44,17 @@ hash(inputPassword) == storedHash
 2. Token signed using secret key
 3. Client stores token
 4. API request that includes `Authorization: Bearer <JWT>`
+
 Server takes care of signature validity and expiration timestamp
 
 ### Database Query
 - Relational database indexing
 - Primary keys: book_id, page_id, and object_id
 Queries are optimized using B-tree indexing
+
 Time Complexity = O(logn)
 
-### Neural Network in Text-To-Speech - finish with 11labs
+### Neural Network in Text-To-Speech
 - The system does not train its own neural network
 - The system integrates with a pretrained deep learning speech model provided by ElevenLabs
 1. Text encoding: input text is tokenized and converted into numerical embeddings.
