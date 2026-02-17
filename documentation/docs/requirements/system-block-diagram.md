@@ -156,17 +156,17 @@ flowchart LR
 # How Data Flows Through the App
 
 ## When a caretaker uses the app:
-1. They log in (Handled by Supabase Auth)
-2. They upload storybook pages (images go to Supabase Storage)
-3. They open the VSD editor and draw hotspots on the page (Canvas API)
-4. They label each hotspot with a word or phrase
-5. Everything gets saved to the database
+1. They log in (Handled by Supabase Auth), system logs login event
+2. They upload storybook pages (images go to Supabase Storage), system logs page upload event
+3. They open the VSD editor and draw hotspots on the page (Canvas API), system logs hotspot creation event
+4. They label each hotspot with a word or phrase, system logs label creation event
+5. Everything gets saved to the database, system logs VSD save event
 
 ## When a child uses the app:
-1. They pick a book from the library
+1. They pick a book from the library, system logs book selection event
 2. The app loads the pages and overlays the hotspots
-3. They tap on a picture and hear the word spoken aloud
-4. They flip through pages using arrows or swipe gestures
+3. They tap on a picture and hear the word spoken aloud, system logs button selection event
+4. They flip through pages using arrows or swipe gestures, system logs arrow selection event
 
 ---
 
