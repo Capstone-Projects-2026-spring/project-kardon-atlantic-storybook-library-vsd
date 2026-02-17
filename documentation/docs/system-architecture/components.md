@@ -4,6 +4,8 @@ sidebar_position: 3
 
 ## Components and their interfaces
 
+---
+
 ### VSD Client Application
 - Web Application - React based front end
 - Description: Browser based progressive web app (pwa) built using React, HTML, CSS, and JavaScript. This works in the user's browser using HTTPS to communicate with backend services. The user interface allows for loading storybooks, VSD editing through the HTML Canvas API, managing application state, and working with backend services.
@@ -63,6 +65,66 @@ returns audio
 
 - Internally managed data: CurrentBookState, VSDObjectList[], ActivePageIndex, JWT token, and UserPreferences.
 
+```mermaid
+classDiagram
+  class VSDClientApp {
+    -currentBookState: Book
+    -vsdObjectList: VSDObject[]
+    -activePageIndex: int
+    -jwtToken: string
+    -userPreferences: UserPreferences
+    +renderUI()
+    +handleLogin(email, password)
+    +handleRegister(email, password)
+    +uploadBook(file)
+    +saveBook(bookId)
+    +selectVSDObject(objectId)
+    +flipPage(direction)
+    +requestSpeech(text, language, voice)
+  }
+
+  class Book {
+    -bookId: UUID
+    -title: string
+    -pages: Page[]
+    +getPage(pageNumber)
+    +addPage(page)
+  }
+
+  class Page {
+    -pageId: UUID
+    -imageUrl: string
+    -pageNumber: int
+    -vsdObjects: VSDObject[]
+    +addVSDObject(obj)
+    +removeVSDObject(objId)
+  }
+
+  class VSDObject {
+    -objectId: UUID
+    -xCoord: float
+    -yCoord: float
+    -width: float
+    -height: float
+    -vocabularyWord: string
+    -ttsLanguage: string
+    +playAudio()
+  }
+
+  class UserPreferences {
+    -language: string
+    -voice: string
+    -theme: string
+  }
+
+  VSDClientApp --> Book
+  Book --> Page
+  Page --> VSDObject
+  VSDClientApp --> UserPreferences
+```
+
+---
+
 ### Application API Layer - Supabase Rest and Realtime
 - Application API layer
 - Backend-as-a-service (Supabase Rest and Realtime)
@@ -89,6 +151,39 @@ channel("book-updates")
   .on("postgres_changes", callback)
 ```
 For live session updates
+
+
+```mermaid
+classDiagram
+  class APIService {
+    +getBooks(userId)
+    +createBook(book)
+    +updateBook(bookId, book)
+    +deleteBook(bookId)
+    +getPages(bookId)
+    +createVSDObject(obj)
+    +subscribe(channel, callback)
+  }
+
+  class RESTEndpoint {
+    -url: string
+    -method: string
+    -headers: Map
+    -body: JSON
+    +call()
+  }
+
+  class WebSocketChannel {
+    -channelName: string
+    +subscribe(callback)
+    +unsubscribe()
+  }
+
+  APIService --> RESTEndpoint
+  APIService --> WebSocketChannel
+```
+
+---
 
 ### Authentication Service
 - Managed identity service (Supabase Auth)
@@ -122,6 +217,34 @@ logout(): void
 ```
 
 - Security protocol: HTTPS required, Row-Level Security (RLS) in database
+
+
+```mermaid
+classDiagram
+  class AuthService {
+    +register(email, password): AuthResponse
+    +login(email, password): AuthResponse
+    +getSession(): Session
+    +logout(): void
+  }
+
+  class AuthResponse {
+    -userId: UUID
+    -sessionToken: string
+    -expiresAt: timestamp
+  }
+
+  class Session {
+    -userId: UUID
+    -jwtToken: string
+    -expiration: timestamp
+  }
+
+  AuthService --> AuthResponse
+  AuthService --> Session
+```
+
+---
 
 ### Storybook Data Service - Database
 - Relational database (PostgreSQL)
@@ -164,6 +287,48 @@ GET /rest/v1/vsd_objects?page_id=eq.uuid
 POST /rest/v1/vsd_objects
 ```
 
+```mermaid
+classDiagram
+  class DatabaseService {
+    +getBooks(userId)
+    +getPages(bookId)
+    +getVSDObjects(pageId)
+    +createBook(book)
+    +createVSDObject(obj)
+  }
+
+  class BookTable {
+    -bookId: UUID
+    -userId: UUID
+    -title: string
+    -createdAt: timestamp
+  }
+
+  class PagesTable {
+    -pageId: UUID
+    -bookId: UUID
+    -imageUrl: string
+    -pageNumber: int
+  }
+
+  class VSDObjectsTable {
+    -objectId: UUID
+    -pageId: UUID
+    -xCoord: float
+    -yCoord: float
+    -width: float
+    -height: float
+    -vocabularyWord: string
+    -ttsLanguage: string
+  }
+
+  DatabaseService --> BookTable
+  DatabaseService --> PagesTable
+  DatabaseService --> VSDObjectsTable
+```
+
+---
+
 ### Media Storage Service
 - Object storage (Supabase storage bucket)
 - Description: Stores uploaded storybook images and audio files and provides secure URL retrieval.
@@ -190,6 +355,25 @@ Delete
 deleteFile(path: string): void
 ```
 
+```mermaid
+classDiagram
+  class MediaStorageService {
+    +uploadFile(bucket, path, file): UploadResponse
+    +getPublicUrl(path): string
+    +deleteFile(path)
+  }
+
+  class UploadResponse {
+    -filePath: string
+    -publicUrl: string
+    -success: bool
+  }
+
+  MediaStorageService --> UploadResponse
+```
+
+---
+
 ### Text-To-Speech Service - External API
 - External cloud API
 - Description: Converts the selected work into audio, using an external speech service. 
@@ -209,6 +393,24 @@ Data Exchange
 - Input: plain text, language code, voice ID
 - Output: audio
 
+```mermaid
+classDiagram
+  class TTSService {
+    +synthesizeSpeech(text, languageCode, voiceName): AudioBlob
+  }
+
+  class AudioBlob {
+    -data: binary
+    -format: string
+    -length: float
+    +play()
+  }
+
+  TTSService --> AudioBlob
+```
+
+---
+
 ### Interfaces together
 Work flow
  - Client receives click
@@ -220,3 +422,4 @@ Work flow
 
 This system has loosely coupled services, standard protocols, secure authentication, scalable backned, and replaceable TTS. 
 
+---
