@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+//testing supabase
+import './lib/supabase'
 
 function App() {
   const [page, setPage] = useState("menu");
