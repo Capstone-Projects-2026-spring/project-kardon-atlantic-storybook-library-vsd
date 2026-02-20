@@ -24,9 +24,17 @@ function MenuPage({ onOpen }) {
     <div className="page">
       <h1 className="title">VSD Storybook Menu</h1>
 
-      <div className="center">
-        <button className="menuButton" onClick={onOpen}>
+      <div className="menuCard">
+        <button className="menuButton primary" onClick={onOpen}>
           Open Book
+        </button>
+
+        <button className="menuButton disabled">
+          Upload Storybook
+        </button>
+
+        <button className="menuButton disabled">
+          Recent Books
         </button>
       </div>
     </div>
