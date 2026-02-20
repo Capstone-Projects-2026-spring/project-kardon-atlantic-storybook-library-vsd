@@ -1,5 +1,9 @@
 import { useState } from "react";
 import "./App.css";
+//testing supabase
+import './lib/supabase'
+
+import ImageUploader from "./components/ImageUploader";
 
 function App() {
   const [page, setPage] = useState("menu");
@@ -39,6 +43,10 @@ function ReaderPage({ onBack }) {
       <div className="readerBox">
         Storybook will show here later.
       </div>
+
+      {/* Testing the image uploader*/}
+      <h2>Image Upload Test</h2>
+      <ImageUploader />
     </div>
   );
 }
