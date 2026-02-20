@@ -1,33 +1,35 @@
 import { useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 //testing supabase
 import './lib/supabase'
 
 import ImageUploader from "./components/ImageUploader";
+import HotspotEditor from "./pages/HotspotEditor";
 
 function App() {
-  const [page, setPage] = useState("menu");
-
   return (
     <div className="app">
-      {page === "menu" ? (
-        <MenuPage onOpen={() => setPage("reader")} />
-      ) : (
-        <ReaderPage onBack={() => setPage("menu")} />
-      )}
+      <Routes>
+        <Route path="/" element={<MenuPage />} />
+        <Route path="/reader" element={<ReaderPage />} />
+        <Route path="/hotspot-editor" element={<HotspotEditor />} />
+      </Routes>
     </div>
   );
 }
 
-function MenuPage({ onOpen }) {
+function MenuPage() {
   return (
     <div className="page">
       <h1 className="title">VSD Storybook Menu</h1>
 
       <div className="menuCard">
-        <button className="menuButton primary" onClick={onOpen}>
-          Open Book
-        </button>
+        <Link to="/reader">
+          <button className="menuButton primary">
+            Open Book
+          </button>
+        </Link>
 
         <button className="menuButton disabled">
           Upload Storybook
@@ -36,17 +38,25 @@ function MenuPage({ onOpen }) {
         <button className="menuButton disabled">
           Recent Books
         </button>
+
+        <Link to="/hotspot-editor">
+          <button className="menuButton primary">
+            Hotspot Editor
+          </button>
+        </Link>
       </div>
     </div>
   );
 }
 
-function ReaderPage({ onBack }) {
+function ReaderPage() {
   return (
     <div className="page">
-      <button className="linkButton" onClick={onBack}>
-        ← Back to Menu
-      </button>
+      <Link to="/">
+        <button className="linkButton">
+          ← Back to Menu
+        </button>
+      </Link>
 
       <div className="readerBox">
         Storybook will show here later.
