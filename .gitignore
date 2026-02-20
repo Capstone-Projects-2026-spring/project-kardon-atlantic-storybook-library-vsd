@@ -26,7 +26,8 @@ dist-ssr
 # Backup files
 *.bak
 
-# Environment files
+# Environment variables
 .env
 .env.local
-.env.*.local.env
+.env.*.local
+
