@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+//testing supabase
+import './lib/supabase'
 
 function App() {
   // read or edit mode
@@ -31,7 +33,10 @@ function App() {
         {page === "library" && (
           <LibraryPage
             mode={mode}
-            onBack={() => setPage("menu")}
+            onBack={() => {
+              setMode("read");
+              setPage("menu");
+            }}
             onOpenBook={() => setPage(mode === "read" ? "reader" : "editor")}
           />
         )}
@@ -148,6 +153,10 @@ function LibraryPage({ mode, onBack, onOpenBook }) {
           Upload Book
         </button>
       </div>
+      
+        <button className="bigBtn" type="button" disabled style={{ width: "min(900px, 95%)" }}>
+          Hotspot Editor (later)
+        </button>
 
       <div className="libraryGrid">
         <BookCard title="Storybook 1" onOpen={onOpenBook} />
@@ -204,6 +213,9 @@ function EditorPage({ onBack }) {
           Edit Mode: VSD editor will go here later.
         </div>
       </div>
+
+      {/* Testing the image uploader*/}
+      <h2>Image Upload Test</h2>
     </div>
   );
 }

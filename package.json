@@ -10,13 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.95.3",
+    "@supabase/supabase-js": "^2.97.0",
     "clsx": "^2.1.1",
     "konva": "^10.2.0",
+    "postgres": "^3.4.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-konva": "^19.2.2",
     "react-router-dom": "^7.13.0",
+    "use-image": "^1.1.4",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
