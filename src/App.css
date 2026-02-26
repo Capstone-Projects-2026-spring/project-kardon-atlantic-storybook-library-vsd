@@ -326,3 +326,163 @@
 .backBtn:hover {
   color: #a9c1ff;
 }
+
+/* editor layout - two columns side by side */
+.editorLayout {
+  display: flex;
+  gap: 20px;
+  width: min(950px, 93%);
+  height: 70%;
+}
+
+/* left column - the page canvas */
+.editorLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1.4;
+}
+
+.editorCanvas {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.editorPageLabel {
+  color: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.editorPageHint {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* right column - tools */
+.editorRight {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.toolSection {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toolLabel {
+  margin: 0;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.wordInput {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.wordInput:focus {
+  border-color: #6d6af0;
+}
+
+.hotspotList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hotspotTag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(109,106,240,0.18);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+.removeBtn:hover {
+  color: #ff6b6b;
+}
+
+.commentBox {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: white;
+  font-size: 0.9rem;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.commentBox:focus {
+  border-color: #6d6af0;
+}
+
+/* page switcher used in both reader and editor */
+.pageSwitcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pageBtn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.pageBtn:hover:enabled {
+  background: rgba(255,255,255,0.12);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pageCount {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+  min-width: 50px;
+  text-align: center;
+}

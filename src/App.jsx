@@ -171,6 +171,17 @@ function BookCard({ title, onOpen }) {
 /* ---------------- READER ---------------- */
 
 function ReaderPage({ onBack }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 5; // placeholder for now
+
+  function goNext() {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  }
+
+  function goPrev() {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  }
+
   return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
@@ -178,7 +189,20 @@ function ReaderPage({ onBack }) {
       </button>
 
       <div className="readerShell">
-        <div className="readerText">Reader Mode: storybook will show here later.</div>
+        <div className="readerText">
+          Page {currentPage} of {totalPages} — storybook will show here later.
+        </div>
+      </div>
+
+      {/* page switching */}
+      <div className="pageSwitcher">
+        <button className="pageBtn" onClick={goPrev} disabled={currentPage === 1}>
+          ← Prev
+        </button>
+        <span className="pageCount">{currentPage} / {totalPages}</span>
+        <button className="pageBtn" onClick={goNext} disabled={currentPage === totalPages}>
+          Next →
+        </button>
       </div>
     </div>
   );
@@ -187,17 +211,143 @@ function ReaderPage({ onBack }) {
 /* ---------------- EDITOR ---------------- */
 
 function EditorPage({ onBack }) {
+  // track which page number we're on
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 5; // placeholder until real book data comes in
+
+  // each hotspot has a word the caretaker types in
+  const [hotspots, setHotspots] = useState([]);
+  const [wordInput, setWordInput] = useState("");
+
+  // comment the caretaker can leave on this page
+  const [comment, setComment] = useState("");
+  const [savedComment, setSavedComment] = useState("");
+
+  function addHotspot() {
+    if (!wordInput.trim()) return;
+    const newHotspot = {
+      id: Date.now(), // simple unique id for now
+      word: wordInput.trim(),
+      page: currentPage,
+    };
+    setHotspots([...hotspots, newHotspot]);
+    setWordInput(""); // clear input after adding
+  }
+
+  function removeHotspot(id) {
+    setHotspots(hotspots.filter((h) => h.id !== id));
+  }
+
+  function saveComment() {
+    setSavedComment(comment);
+    alert("Comment saved!");
+  }
+
+  function goNextPage() {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  }
+
+  function goPrevPage() {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  }
+
   return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
         ← Back to Library
       </button>
 
-      <div className="readerShell">
-        <div className="readerText">Edit Mode: VSD editor will go here later.</div>
+      <h2 className="pageTitle" style={{ marginTop: "10px" }}>Edit Mode</h2>
+
+      <div className="editorLayout">
+
+        {/* left side: page display + page switcher */}
+        <div className="editorLeft">
+          <div className="editorCanvas">
+            {/* this box represents the current page being edited */}
+            <p className="editorPageLabel">Page {currentPage} of {totalPages}</p>
+            <p className="editorPageHint">Page image will display here</p>
+          </div>
+
+          {/* page switching buttons */}
+          <div className="pageSwitcher">
+            <button
+              className="pageBtn"
+              onClick={goPrevPage}
+              disabled={currentPage === 1}
+            >
+              ← Prev
+            </button>
+            <span className="pageCount">{currentPage} / {totalPages}</span>
+            <button
+              className="pageBtn"
+              onClick={goNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+
+        {/* right side: hotspot tools + comments */}
+        <div className="editorRight">
+
+          {/* hotspot section */}
+          <div className="toolSection">
+            <p className="toolLabel">Add Hotspot Word</p>
+            <input
+              className="wordInput"
+              type="text"
+              placeholder="type a word e.g. cat"
+              value={wordInput}
+              onChange={(e) => setWordInput(e.target.value)}
+            />
+            <button className="bigBtn bigBtnPrimary" onClick={addHotspot}>
+              + Add Hotspot
+            </button>
+          </div>
+
+          {/* list of hotspots added so far on this page */}
+          {hotspots.filter((h) => h.page === currentPage).length > 0 && (
+            <div className="toolSection">
+              <p className="toolLabel">Hotspots on this page:</p>
+              <div className="hotspotList">
+                {hotspots
+                  .filter((h) => h.page === currentPage)
+                  .map((h) => (
+                    <div key={h.id} className="hotspotTag">
+                      <span>🔵 {h.word}</span>
+                      <button
+                        className="removeBtn"
+                        onClick={() => removeHotspot(h.id)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* comment section */}
+          <div className="toolSection">
+            <p className="toolLabel">Page Comment (optional)</p>
+            <textarea
+              className="commentBox"
+              placeholder="leave a note for yourself or other editors..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+            />
+            <button className="bigBtn" onClick={saveComment}>
+              Save Comment
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   );
 }
 
-export default App;
+export default App; 
