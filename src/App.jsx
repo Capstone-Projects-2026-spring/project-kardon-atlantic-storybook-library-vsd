@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-//testing supabase
-import './lib/supabase'
+
+// import "./lib/supabase";
 
 function App() {
   // read or edit mode
@@ -41,13 +41,9 @@ function App() {
           />
         )}
 
-        {page === "reader" && (
-          <ReaderPage onBack={() => setPage("library")} />
-        )}
+        {page === "reader" && <ReaderPage onBack={() => setPage("library")} />}
 
-        {page === "editor" && (
-          <EditorPage onBack={() => setPage("library")} />
-        )}
+        {page === "editor" && <EditorPage onBack={() => setPage("library")} />}
       </div>
     </div>
   );
@@ -65,13 +61,13 @@ function HeaderBar() {
 
       <div className="headerRight">
         <button className="iconBtn" title="Settings" aria-label="Settings">
-          <span className="iconGlyph">⚙️</span>
+          <span className="iconSymbol">⚙️</span>
         </button>
         <button className="iconBtn" title="Help" aria-label="Help">
-          <span className="iconGlyph">❓</span>
+          <span className="iconSymbol">❓</span>
         </button>
         <button className="iconBtn" title="About" aria-label="About">
-          <span className="iconGlyph">ℹ️</span>
+          <span className="iconSymbol">ℹ️</span>
         </button>
       </div>
     </div>
@@ -153,22 +149,11 @@ function LibraryPage({ mode, onBack, onOpenBook }) {
           Upload Book
         </button>
       </div>
-      
-        <button className="bigBtn" type="button" disabled style={{ width: "min(900px, 95%)" }}>
-          Hotspot Editor (later)
-        </button>
 
       <div className="libraryGrid">
-        <BookCard title="Storybook 1" onOpen={onOpenBook} />
-        <BookCard title="Storybook 2" onOpen={onOpenBook} />
-        <BookCard title="Storybook 3" onOpen={onOpenBook} />
-        <BookCard title="Storybook 4" onOpen={onOpenBook} />
-        <BookCard title="Storybook 5" onOpen={onOpenBook} />
-        <BookCard title="Storybook 6" onOpen={onOpenBook} />
-        <BookCard title="Storybook 7" onOpen={onOpenBook} />
-        <BookCard title="Storybook 8" onOpen={onOpenBook} />
-        <BookCard title="Storybook 9" onOpen={onOpenBook} />
-        <BookCard title="Storybook 10" onOpen={onOpenBook} />
+        {Array.from({ length: 10 }).map((_, i) => (
+          <BookCard key={i} title={`Storybook ${i + 1}`} onOpen={onOpenBook} />
+        ))}
       </div>
     </div>
   );
@@ -209,13 +194,8 @@ function EditorPage({ onBack }) {
       </button>
 
       <div className="readerShell">
-        <div className="readerText">
-          Edit Mode: VSD editor will go here later.
-        </div>
+        <div className="readerText">Edit Mode: VSD editor will go here later.</div>
       </div>
-
-      {/* Testing the image uploader*/}
-      <h2>Image Upload Test</h2>
     </div>
   );
 }
