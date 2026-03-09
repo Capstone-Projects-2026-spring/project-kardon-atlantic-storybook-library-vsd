@@ -1,10 +1,7 @@
-// src/__tests__/logger.test.js
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
-// Force Vitest to load the real module (fixes ESM named export issues)
 const logger = await vi.importActual('../logger');
 
-// Destructure after import (Vitest wraps it as an object)
 const { log, logLogin, logHotspotClick, logError } = logger;
 
 describe('Logger Utility', () => {
