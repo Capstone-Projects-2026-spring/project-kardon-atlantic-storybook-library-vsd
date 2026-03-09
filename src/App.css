@@ -1,96 +1,488 @@
-#root {
-  width: 100%;
-  min-height: 100vh;
+/* Full screen background */
+.appBg {
+  width: 100vw;
+  height: 100vh;
+  background: #181a20;
+  padding: 0;
+  margin: 0;
 }
 
-.app {
+/* Full screen app container */
+.window {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
+  background: rgba(26, 28, 36, 0.9);
+}
+
+/* ---------- Header ---------- */
+.headerBar {
+  height: 64px;
+  background: rgba(18, 20, 26, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.appIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7c5cff, #34d3ff);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+}
+
+.appTitle {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.iconSymbol {
+  display: inline-block;
+  transform: translateY(-1px);
+}
+
+/* ---------- Content ---------- */
+.content {
+  height: calc(100% - 64px);
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  position: relative;
+}
+
+/* ---------- Menu Card ---------- */
+.mainCard {
+  width: min(400px, 92%);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 26px 26px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.cardTitleIcon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.cardTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.cardButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Buttons */
+.bigBtn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bigBtnPrimary {
+  background: #6d6af0;
+}
+
+.bigBtn:hover:enabled {
+  background: rgba(255, 255, 255, 0.14);
+}
+.bigBtnPrimary:hover:enabled {
+  background: #7a76ff;
+}
+
+.bigBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ---------- Recent Storybooks ---------- */
+.recentSection {
+  width: min(700px, 92%);
+}
+
+.recentHeader {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 650;
+  margin: 6px 0 10px;
+  font-size: 1.05rem;
+}
+
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recentRow {
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+}
+
+.recentThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.recentLine {
+  height: 12px;
+  width: 55%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.viewLibraryRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.viewLibraryBtn {
+  background: none;
+  border: none;
+  color: #7aa2ff;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 6px 0;
+}
+.viewLibraryBtn:hover {
+  color: #a9c1ff;
+}
+
+/* ---------- Library ---------- */
+.pageTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 2rem;
+}
+
+.libraryHeaderRow {
+  width: min(900px, 95%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.uploadBtn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: none;
+  background: #6d6af0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.libraryTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modePill {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 650;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.modePillEdit {
+  background: rgba(109, 106, 240, 0.22);
+  border: 1px solid rgba(109, 106, 240, 0.35);
+}
+
+.libraryGrid {
+  width: min(900px, 95%);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.bookCard {
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.bookCard:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bookCover {
+  height: 180px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.bookTitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---------- Reader / Editor ---------- */
+.readerShell {
+  width: min(1000px, 92%);
+  height: 70%;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: grid;
   place-items: center;
 }
 
-.page {
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  text-align: center;
+.readerText {
+  color: rgba(255, 255, 255, 0.75);
 }
 
-
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-.menuButton {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.linkButton {
+/* ---------- Back Button ---------- */
+.backBtn {
+  position: absolute;
+  top: 18px;
+  left: 18px;
   background: none;
   border: none;
-  color: #646cff;
+  color: #7aa2ff;
   cursor: pointer;
   font-size: 1rem;
-
-  position: absolute;
-  top: 20px;
-  left: 20px;
 }
 
-.readerBox {
-  height: 60vh;
-  width: 400px; 
+.backBtn:hover {
+  color: #a9c1ff;
+}
+
+/* editor layout - two columns side by side */
+.editorLayout {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
+  gap: 20px;
+  width: min(950px, 93%);
+  height: 70%;
 }
 
-.menuCard {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2rem;
-  border-radius: 18px;
+/* left column - the page canvas */
+.editorLeft {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  width: 320px;
+  gap: 14px;
+  flex: 1.4;
 }
 
-.menuButton {
-  padding: 1rem;
-  font-size: 1.1rem;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+.editorCanvas {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.menuButton:hover {
-  transform: scale(1.02);
+.editorPageLabel {
+  color: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.primary {
-  background: #646cff;
+.editorPageHint {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* right column - tools */
+.editorRight {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.toolSection {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toolLabel {
+  margin: 0;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.wordInput {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
   color: white;
+  font-size: 0.95rem;
+  outline: none;
 }
 
-.primary:hover {
-  background: #747bff;
+.wordInput:focus {
+  border-color: #6d6af0;
 }
 
-.disabled {
-  background: #333;
-  color: #aaa;
+.hotspotList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hotspotTag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(109,106,240,0.18);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+.removeBtn:hover {
+  color: #ff6b6b;
+}
+
+.commentBox {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: white;
+  font-size: 0.9rem;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.commentBox:focus {
+  border-color: #6d6af0;
+}
+
+/* page switcher used in both reader and editor */
+.pageSwitcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pageBtn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.pageBtn:hover:enabled {
+  background: rgba(255,255,255,0.12);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
-  opacity: 0.6;
+}
+
+.pageCount {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+  min-width: 50px;
+  text-align: center;
 }

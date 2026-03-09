@@ -152,9 +152,56 @@ export default function HotspotEditor() {
     setDragCurrent(null)
   }
 
-  const handleHotspotClick = (id, word) => {
+  const handleHotspotClick = async (id, word) => {
     const hotspot = hotspots.find(h => h.id === id)
     setSelectedHotspot(hotspot)
+
+    //added for 11labs tts
+    //when word is clicked it calls supabase edge function
+    //then plays returned audio
+
+    try {
+      //call Supabase edge function
+      const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/tts`, 
+          {
+            method: 'POST',
+
+            headers: {
+              "Content-Type": "application/json",
+    
+              "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+              "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
+        body: JSON.stringify({ word })
+      })
+
+      if (!response.ok) throw new Error('Failed to generate speech')
+      
+      // Check if the response is successful
+      if (!response.ok) {
+        const text = await response.text()
+        console.error("EDGE FUNCTION ERROR:", text)
+        throw new Error(text)
+      }
+
+      // Get the audio from the response
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl)
+      audio.play()
+
+    } catch (error) {
+
+      console.error("TTS ERROR:", error);
+    
+      return new Response(
+        JSON.stringify({
+          error: error.message
+        }),
+        { status: 500 }
+      );
+    }
   }
 
   const handleDeleteHotspot = (id) => {
