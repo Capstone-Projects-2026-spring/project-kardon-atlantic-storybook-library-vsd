@@ -1,9 +1,7 @@
 // src/__tests__/supabase-client.test.js
 import { describe, test, expect, vi } from 'vitest';
 
-// Mock the entire supabaseClient module (prevents real createClient from running)
 vi.mock('../supabaseClient', () => {
-  // Fake supabase object with the methods you use
   const fakeSupabase = {
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
@@ -24,7 +22,6 @@ vi.mock('../supabaseClient', () => {
   };
 });
 
-// Now import the mocked supabase
 import { supabase } from '../supabaseClient'; // adjust path if needed
 
 describe('supabaseClient initializes without errors', () => {
