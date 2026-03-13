@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-
-// import "./lib/supabase";
+// helpers for pushing images into the Supabase storage bucket
+import { uploadImage, getImageUrl } from './lib/storage'
 
 function App() {
   // read or edit mode
@@ -129,6 +129,8 @@ function RecentRow() {
 /* ---------------- LIBRARY ---------------- */
 
 function LibraryPage({ mode, onBack, onOpenBook }) {
+  // whether the import modal is visible; appears when user clicks Upload Book
+  const [showImport, setShowImport] = useState(false)
   const modeLabel = mode === "read" ? "Reader Mode" : "Edit Mode";
 
   return (
@@ -145,10 +147,18 @@ function LibraryPage({ mode, onBack, onOpenBook }) {
           </div>
         </div>
 
-        <button className="uploadBtn" type="button" disabled>
+        <button
+          className="uploadBtn"
+          type="button"
+          onClick={() => setShowImport(true)}
+          style={{ cursor: 'pointer', opacity: 1 }}
+        >
           Upload Book
         </button>
       </div>
+
+      {/* import modal component shown on demand */}
+      {showImport && <ImportFiles onClose={() => setShowImport(false)} />}
 
       <div className="libraryGrid">
         {Array.from({ length: 10 }).map((_, i) => (
@@ -351,3 +361,92 @@ function EditorPage({ onBack }) {
 }
 
 export default App; 
+
+/* ---------------- UPLOADER ---------------- */
+
+// modal used by the library page to pick multiple images and push them
+// into the Supabase `image` bucket. shows status per file and a close
+// button when done.
+/* ---------------- Upload Files ---------------- */
+
+function ImportFiles({ onClose }) {
+  const [files, setFiles] = useState([])
+  const [results, setResults] = useState({})
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(null)
+
+  // when the file input changes, keep only png/jpg and warn about others
+  function handleSelect(e) {
+    setError(null)
+    const list = Array.from(e.target.files || [])
+    const allowed = list.filter(f => /image\/(png|jpeg|jpg)/.test(f.type))
+    const rejected = list.filter(f => !/image\/(png|jpeg|jpg)/.test(f.type))
+    if (rejected.length) setError(`Rejected: ${rejected.map(r => r.name).join(', ')}`)
+    setFiles(allowed)
+    setResults({})
+  }
+
+  // take all selected files and send them to Supabase one-by-one.
+  // updates `results` so the UI can show progress and final links.
+  async function handleUploadAll() {
+    if (!files.length) return
+    setBusy(true)
+    const newResults = {}
+
+    for (const f of files) {
+      newResults[f.name] = { status: 'uploading' } 
+      setResults({ ...newResults })
+      try {
+        const path = await uploadImage(f)  // upload the file to Supabase storage; returns the path or null if it failed
+        if (!path) {
+          newResults[f.name] = { status: 'error', error: 'Upload failed' }
+        } else {
+          const url = getImageUrl(path)    // get the public URL for the uploaded image so we can show a link
+          newResults[f.name] = { status: 'done', path, url }
+        }
+      } catch (e) {
+        newResults[f.name] = { status: 'error', error: e.message || String(e) }
+      }
+      setResults({ ...newResults })
+    }
+
+    setBusy(false)
+  }
+
+  return (
+    <div style={{ position: 'fixed', left: 16, right: 16, top: 90, zIndex: 60 }}>
+      <div style={{ margin: '0 auto', maxWidth: 800, padding: 12, borderRadius: 8, background: '#0f1720', border: '1px solid rgba(255,255,255,0.06)', color: 'white' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input type="file" multiple accept="image/png, image/jpeg" onChange={handleSelect} />
+          <button onClick={handleUploadAll} disabled={busy || !files.length} className="bigBtn bigBtnPrimary">Upload All</button>
+          <button onClick={onClose} className="bigBtn">Close</button>
+        </div>
+
+        {error && <div style={{ color: 'salmon', marginTop: 8 }}>{error}</div>}
+
+        <div style={{ marginTop: 12 }}>
+          {files.length === 0 && <div>No files selected.</div>}
+          {files.map((f) => {
+            const r = results[f.name]
+            return (
+              <div key={f.name} style={{ padding: 6, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <strong>{f.name}</strong> — {Math.round(f.size / 1024)} KB
+                <div>
+                  {r ? (
+                    r.status === 'uploading' ? 'Uploading…' : r.status === 'done' ? (
+                      <a href={r.url} target="_blank" rel="noreferrer">View</a>
+                    ) : (
+                      <span style={{ color: 'salmon' }}>{r.error}</span>
+                    )
+                  ) : (
+                    'Not uploaded'
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
