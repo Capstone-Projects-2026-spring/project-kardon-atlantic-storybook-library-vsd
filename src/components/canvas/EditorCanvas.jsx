@@ -33,10 +33,10 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
     onMouseLeave: () => setIsHovering(false),
     onClick: () => onSelect(id),
     onDragEnd: handleDragEnd,
-    fill: isHovering ? "#ff6b6b" : "#6d6af0",
+    fill: isHovering ? "#ff69b4" : "#ff69b4",  // hot pink
     opacity: 0.6,
-    stroke: "#fff",
-    strokeWidth: isHovering ? 2 : 1,
+    stroke: "#ff1493", // darker pink border
+    strokeWidth: isHovering ? 5 : 4, // thicker border
   };
 
   if (shape_type === "circle") {
