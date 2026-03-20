@@ -9,6 +9,16 @@ function App() {
   const [mode, setMode] = useState("read");
   const [page, setPage] = useState("menu");
 
+  // uploaded books: array of { title, pages: [url, url, ...] }
+  const [books, setBooks] = useState([]);
+  const [activeBookIndex, setActiveBookIndex] = useState(null);
+
+  const addBook = (title, pages) => {
+    setBooks((prev) => [...prev, { title, pages }]);
+  };
+
+  const activeBook = activeBookIndex !== null ? books[activeBookIndex] : null;
+
   const goReaderLibrary = () => {
     setMode("read");
     setPage("library");
@@ -34,17 +44,32 @@ function App() {
         {page === "library" && (
           <LibraryPage
             mode={mode}
+            books={books}
             onBack={() => {
               setMode("read");
               setPage("menu");
             }}
-            onOpenBook={() => setPage(mode === "read" ? "reader" : "editor")}
+            onOpenBook={(index) => {
+              setActiveBookIndex(index);
+              setPage(mode === "read" ? "reader" : "editor");
+            }}
+            onBookUploaded={addBook}
           />
         )}
 
-        {page === "reader" && <ReaderPage onBack={() => setPage("library")} />}
+        {page === "reader" && (
+          <ReaderPage
+            onBack={() => setPage("library")}
+            pages={activeBook?.pages || []}
+          />
+        )}
 
-        {page === "editor" && <EditorPage onBack={() => setPage("library")} />}
+        {page === "editor" && (
+          <EditorPage
+            onBack={() => setPage("library")}
+            pages={activeBook?.pages || []}
+          />
+        )}
       </div>
     </div>
   );
@@ -129,7 +154,7 @@ function RecentRow() {
 
 /* ---------------- LIBRARY ---------------- */
 
-function LibraryPage({ mode, onBack, onOpenBook }) {
+function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
   // whether the import modal is visible; appears when user clicks Upload Book
   const [showImport, setShowImport] = useState(false)
   const modeLabel = mode === "read" ? "Reader Mode" : "Edit Mode";
@@ -159,21 +184,35 @@ function LibraryPage({ mode, onBack, onOpenBook }) {
       </div>
 
       {/* import modal component shown on demand */}
-      {showImport && <ImportFiles onClose={() => setShowImport(false)} />}
+      {showImport && (
+        <ImportFiles
+          onClose={() => setShowImport(false)}
+          onBookUploaded={onBookUploaded}
+        />
+      )}
 
       <div className="libraryGrid">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <BookCard key={i} title={`Storybook ${i + 1}`} onOpen={onOpenBook} />
+        {books.length === 0 && (
+          <div style={{ color: 'rgba(255,255,255,0.5)', gridColumn: '1 / -1', textAlign: 'center', padding: 40 }}>
+            No books yet. Click "Upload Book" to add one.
+          </div>
+        )}
+        {books.map((book, i) => (
+          <BookCard key={i} title={book.title} coverUrl={book.pages[0]} onOpen={() => onOpenBook(i)} />
         ))}
       </div>
     </div>
   );
 }
 
-function BookCard({ title, onOpen }) {
+function BookCard({ title, coverUrl, onOpen }) {
   return (
     <button className="bookCard" onClick={onOpen} type="button">
-      <div className="bookCover" aria-hidden="true" />
+      {coverUrl ? (
+        <img src={coverUrl} alt={title} className="bookCover" style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+      ) : (
+        <div className="bookCover" aria-hidden="true" />
+      )}
       <div className="bookTitle">{title}</div>
     </button>
   );
@@ -181,17 +220,10 @@ function BookCard({ title, onOpen }) {
 
 /* ---------------- READER ---------------- */
 
-function ReaderPage({ onBack }) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 5; // placeholder for now
-
-  function goNext() {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  }
-
-  function goPrev() {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  }
+function ReaderPage({ onBack, pages }) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const totalPages = pages.length;
+  const imageUrl = pages[currentPage];
 
   return (
     <div className="content">
@@ -199,31 +231,39 @@ function ReaderPage({ onBack }) {
         ← Back to Library
       </button>
 
-      <div className="readerShell">
-        <div className="readerText">
-          Page {currentPage} of {totalPages} — storybook will show here later.
-        </div>
+      <div className="readerShell" style={{ overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={`Page ${currentPage + 1}`}
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
+          />
+        ) : (
+          <div className="readerText">No pages available.</div>
+        )}
       </div>
 
-      {/* page switching */}
-      <div className="pageSwitcher">
-        <button className="pageBtn" onClick={goPrev} disabled={currentPage === 1}>
-          ← Prev
-        </button>
-        <span className="pageCount">{currentPage} / {totalPages}</span>
-        <button className="pageBtn" onClick={goNext} disabled={currentPage === totalPages}>
-          Next →
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="pageSwitcher">
+          <button className="pageBtn" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>
+            ← Prev
+          </button>
+          <span className="pageCount">{currentPage + 1} / {totalPages}</span>
+          <button className="pageBtn" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages - 1}>
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ---------------- EDITOR ---------------- */
 
-function EditorPage({ onBack }) {
+function EditorPage({ onBack, pages }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 5;
+  const totalPages = pages.length;
+  const imageUrl = pages[currentPage - 1];
 
   const [hotspots, setHotspots] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -294,6 +334,7 @@ function EditorPage({ onBack }) {
               onHotspotCreated={handleHotspotCreated}
               onSelect={handleSelect}
               onMove={handleMove}
+              imageUrl={imageUrl}
             />
           </div>
 
@@ -416,8 +457,9 @@ export default App;
 // button when done.
 /* ---------------- Upload Files ---------------- */
 
-function ImportFiles({ onClose }) {
+function ImportFiles({ onClose, onBookUploaded }) {
   const [files, setFiles] = useState([])
+  const [bookTitle, setBookTitle] = useState('')
   const [results, setResults] = useState({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
@@ -433,28 +475,35 @@ function ImportFiles({ onClose }) {
     setResults({})
   }
 
-  // take all selected files and send them to Supabase one-by-one.
-  // updates `results` so the UI can show progress and final links.
+  // upload all files as pages of a single book
   async function handleUploadAll() {
     if (!files.length) return
     setBusy(true)
     const newResults = {}
+    const pageUrls = []
 
     for (const f of files) {
-      newResults[f.name] = { status: 'uploading' } 
+      newResults[f.name] = { status: 'uploading' }
       setResults({ ...newResults })
       try {
-        const path = await uploadImage(f)  // upload the file to Supabase storage; returns the path or null if it failed
+        const path = await uploadImage(f)
         if (!path) {
           newResults[f.name] = { status: 'error', error: 'Upload failed' }
         } else {
-          const url = getImageUrl(path)    // get the public URL for the uploaded image so we can show a link
+          const url = getImageUrl(path)
           newResults[f.name] = { status: 'done', path, url }
+          pageUrls.push(url)
         }
       } catch (e) {
         newResults[f.name] = { status: 'error', error: e.message || String(e) }
       }
       setResults({ ...newResults })
+    }
+
+    // create one book with all successfully uploaded pages
+    if (pageUrls.length > 0) {
+      const title = bookTitle.trim() || `Storybook ${Date.now()}`
+      onBookUploaded(title, pageUrls)
     }
 
     setBusy(false)
@@ -463,10 +512,20 @@ function ImportFiles({ onClose }) {
   return (
     <div style={{ position: 'fixed', left: 16, right: 16, top: 90, zIndex: 60 }}>
       <div style={{ margin: '0 auto', maxWidth: 800, padding: 12, borderRadius: 8, background: '#0f1720', border: '1px solid rgba(255,255,255,0.06)', color: 'white' }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="Book title"
+            value={bookTitle}
+            onChange={(e) => setBookTitle(e.target.value)}
+            style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.9rem' }}
+          />
           <input type="file" multiple accept="image/png, image/jpeg" onChange={handleSelect} />
           <button onClick={handleUploadAll} disabled={busy || !files.length} className="bigBtn bigBtnPrimary">Upload All</button>
           <button onClick={onClose} className="bigBtn">Close</button>
+        </div>
+        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: 4 }}>
+          Select multiple images — they become pages in order.
         </div>
 
         {error && <div style={{ color: 'salmon', marginTop: 8 }}>{error}</div>}
