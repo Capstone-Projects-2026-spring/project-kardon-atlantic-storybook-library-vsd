@@ -2,10 +2,6 @@ import { useState } from "react";
 import { Stage, Layer, Image as KonvaImage, Circle, Rect, Text } from "react-konva";
 import useImage from "use-image";
 
-// Hardcoded sample image for MVP demo
-const SAMPLE_IMAGE_URL =
-  "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ffiverr-res.cloudinary.com%2Fimages%2Ft_main1%2Cq_auto%2Cf_auto%2Cq_auto%2Cf_auto%2Fgigs%2F282913233%2Foriginal%2F96e184b30c806db46eb3d39b102e48fcab53b33e%2Fdesign-children-story-and-children-book-illustration-and-cover.png&f=1&nofb=1&ipt=0f8705e024d4ea16bdc671b977b518b864fc21b50bb9153c23faec5358ce3123";
-
 const CANVAS_W = 560;
 const CANVAS_H = 400;
 
@@ -68,8 +64,8 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
 
 /* ---- main canvas component ---- */
 
-export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotspotCreated, onSelect, onMove }) {
-  const [image] = useImage(SAMPLE_IMAGE_URL);
+export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotspotCreated, onSelect, onMove, imageUrl }) {
+  const [image, imageStatus] = useImage(imageUrl, 'anonymous');
 
   // drag-to-draw state
   const [isDragging, setIsDragging] = useState(false);
@@ -133,6 +129,13 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
     >
       <Layer>
         {image && <KonvaImage image={image} width={CANVAS_W} height={CANVAS_H} listening={false} />}
+        {!image && (
+          <Text
+            x={CANVAS_W / 2 - 80} y={CANVAS_H / 2 - 10}
+            text={imageStatus === 'loading' ? 'Loading image...' : imageUrl ? 'Image failed to load' : 'No image selected'}
+            fontSize={14} fill="#aaa"
+          />
+        )}
 
         {pageHotspots.map((h) => (
           <CanvasHotspot key={h.id} hotspot={h} onSelect={onSelect} onMove={onMove} />

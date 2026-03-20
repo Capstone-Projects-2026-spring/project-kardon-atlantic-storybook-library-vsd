@@ -9,7 +9,10 @@ export async function uploadImage(file) {
 
   const { data, error } = await supabase.storage.from('image').upload(fileName, file)
 
-  if (error) return null
+  if (error) {
+    console.error('Supabase upload error:', error.message, error)
+    return null
+  }
   return data.path
 }
 
