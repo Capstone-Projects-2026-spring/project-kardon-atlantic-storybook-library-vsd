@@ -912,3 +912,104 @@
 .modalBtnSecondary:hover {
   background: rgba(255,255,255,0.95);
 }
+
+/* fullscreen reader mode */
+.readerFullscreen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.readerFullscreenImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* floating controls at bottom in fullscreen */
+.readerFullscreenControls {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.readerFullscreenBtn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.readerFullscreenBtn:hover:enabled {
+  background: rgba(255,255,255,0.15);
+}
+
+.readerFullscreenBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.readerFullscreenCount {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* exit fullscreen button top right corner */
+.exitFullscreenBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.85);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s;
+}
+
+.exitFullscreenBtn:hover {
+  background: rgba(0,0,0,0.75);
+}
+
+/* fullscreen button shown in normal reader mode */
+.fullscreenToggleBtn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(42,74,107,0.2);
+  border-radius: 10px;
+  padding: 6px 14px;
+  color: #2a4a6b;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s ease;
+}
+
+.fullscreenToggleBtn:hover {
+  background: rgba(255,255,255,0.88);
+}
