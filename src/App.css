@@ -2,27 +2,61 @@
 .appBg {
   width: 100vw;
   height: 100vh;
-  background: #181a20;
   padding: 0;
   margin: 0;
+
+  /* soft sky gradient top to bottom */
+  background: linear-gradient(170deg, #69bbc6 0%, #b9d9f3 40%, #ded695 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle cloud shapes in the background */
+.appBg::before {
+  content: "";
+  position: absolute;
+  top: 6%;
+  left: 8%;
+  width: 320px;
+  height: 90px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 999px;
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.appBg::after {
+  content: "";
+  position: absolute;
+  top: 14%;
+  right: 10%;
+  width: 260px;
+  height: 70px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 999px;
+  filter: blur(16px);
+  pointer-events: none;
 }
 
 /* Full screen app container */
 .window {
   width: 100%;
   height: 100%;
-  background: rgba(26, 28, 36, 0.9);
+  /* keep transparent so background shows through */
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
-
 /* ---------- Header ---------- */
 .headerBar {
   height: 64px;
-  background: rgba(18, 20, 26, 0.6);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.6);
 }
 
 .headerLeft {
@@ -40,9 +74,9 @@
 }
 
 .appTitle {
-  color: rgba(255, 255, 255, 0.92);
+  color: #2a4a6b;
   font-size: 1.2rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .headerRight {
@@ -52,25 +86,30 @@
 }
 
 .iconBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(100,160,220,0.4);
+  background: rgba(180,220,255,0.55);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   line-height: 1;
-}
-.iconBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
+.iconBtn:hover {
+  background: rgba(180,220,255,0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
 .iconSymbol {
   display: inline-block;
   transform: translateY(-1px);
+  font-size: 1.1rem;
 }
 
 /* ---------- Content ---------- */
@@ -82,11 +121,13 @@
   align-items: center;
   gap: 22px;
   position: relative;
+  overflow-y: auto;        /* enables mouse scroll and touch scroll */
+  -webkit-overflow-scrolling: touch;  /* makes it smooth on iPad/iPhone */
 }
 
 /* ---------- Menu Card ---------- */
 .mainCard {
-  width: min(400px, 92%);
+  width: min(520px, 92%);
   background: rgba(255, 255, 255, 0.06);
   padding: 26px 26px 22px;
   border-radius: 20px;
@@ -104,7 +145,7 @@
 }
 
 .cardTitleIcon {
-  font-size: 22px;
+  font-size: 36px;
   line-height: 1;
 }
 
@@ -124,11 +165,11 @@
 /* Buttons */
 .bigBtn {
   width: 100%;
-  height: 48px;
+  height: 54px;
   border-radius: 12px;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255,255,255,0.7);
+  color: #1e3a5f;
   cursor: pointer;
   font-size: 1rem;
   display: flex;
@@ -216,8 +257,12 @@
 /* ---------- Library ---------- */
 .pageTitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.92);
   font-size: 2rem;
+  font-weight: 800;
+  color: #0f3d81;
+  text-shadow:
+    1px 1px 0px #a0c4e0,
+    2px 2px 4px rgba(0,0,0,0.15);
 }
 
 .libraryHeaderRow {
@@ -230,14 +275,22 @@
 
 .uploadBtn {
   height: 44px;
-  padding: 0 16px;
+  padding: 0 20px;
   border-radius: 12px;
-  border: none;
-  background: #6d6af0;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 1rem;
-  cursor: not-allowed;
-  opacity: 0.8;
+  border: 1.5px solid rgba(42,74,107,0.3);
+  background: rgba(255,255,255,0.7);
+  color: #1e3a5f;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.uploadBtn:hover {
+  background: rgba(255,255,255,0.92);
+  transform: translateY(-2px);
 }
 
 .libraryTitleBlock {
@@ -248,52 +301,59 @@
 
 .modePill {
   width: fit-content;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 650;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(42,74,107,0.3);
+  color: #2a4a6b;
 }
 
 .modePillEdit {
-  background: rgba(109, 106, 240, 0.22);
-  border: 1px solid rgba(109, 106, 240, 0.35);
+  background: rgba(109,106,240,0.15);
+  border: 1.5px solid rgba(109,106,240,0.4);
+  color: #4a48c0;
 }
 
 .libraryGrid {
   width: min(900px, 95%);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 22px;
 }
 
 .bookCard {
   border: none;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.55);
   border-radius: 16px;
-  padding: 14px;
+  padding: 10px;
   cursor: pointer;
   text-align: center;
   transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1.5px solid rgba(255,255,255,0.7);
 }
 
 .bookCard:hover {
   transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.75);
 }
 
 .bookCover {
-  height: 180px;
+  height: 210px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  margin-bottom: 10px;
+  background: rgba(100,150,200,0.15);
+  margin-bottom: 8px;
+  width: 100%;
+  object-fit: cover;
 }
 
 .bookTitle {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin-top: 6px;
 }
 
 /* ---------- Reader / Editor ---------- */
@@ -316,15 +376,21 @@
   position: absolute;
   top: 18px;
   left: 18px;
-  background: none;
-  border: none;
-  color: #7aa2ff;
+  background: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(42,74,107,0.2);
+  border-radius: 10px;
+  padding: 6px 14px;
+  color: #2a4a6b;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s ease;
 }
 
 .backBtn:hover {
-  color: #a9c1ff;
+  background: rgba(255,255,255,0.85);
+  color: #0f3d81;
 }
 
 /* editor layout - two columns side by side */
@@ -378,8 +444,8 @@
 }
 
 .toolSection {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(42,74,107,0.12);
   border-radius: 14px;
   padding: 14px;
   display: flex;
@@ -389,7 +455,7 @@
 
 .toolLabel {
   margin: 0;
-  color: rgba(255,255,255,0.7);
+  color: #1e3a5f;
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -422,7 +488,7 @@
   border-radius: 8px;
   padding: 7px 10px;
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.85);
+  color: #1e3a5f;
 }
 
 .removeBtn {
@@ -440,9 +506,9 @@
 .commentBox {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.07);
-  color: white;
+  border: 1px solid  rgba(42,74,107,0.2);
+  background: rgba(255,255,255,0.7);
+  color: #1e3a5f;
   font-size: 0.9rem;
   resize: none;
   outline: none;
@@ -464,9 +530,9 @@
 .pageBtn {
   padding: 8px 18px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(42,74,107,0.2);
+  background: rgba(255,255,255,0.6);
+  color: #2a4a6b;
   cursor: pointer;
   font-size: 0.95rem;
 }
@@ -481,8 +547,469 @@
 }
 
 .pageCount {
-  color: rgba(255,255,255,0.6);
+  color: #2a4a6b;
   font-size: 0.95rem;
   min-width: 50px;
   text-align: center;
+}
+
+/* subtitle under menu title */
+.cardSubtitle {
+  margin: 0;
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.9rem;
+}
+
+/* divider line between title and buttons */
+.cardDivider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 4px 0;
+}
+
+/* ---- new menu page layout ---- */
+.menuPage {
+  height: calc(100% - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  padding-top: 16px;
+  padding-bottom: 20px;
+}
+
+/* title area */
+.menuTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.menuEmoji {
+  font-size: 48px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.menuTitle {
+  margin: 0;
+  font-size: 5.4rem;
+  font-weight: 800;
+  color: #0f3d81;
+  letter-spacing: -0.5px;
+  text-shadow:
+    1px 1px 0px #a0c4e0,   /* this is the first layer of shadow, close */
+    2px 2px 0px #88b0d0,   /* second layer, slightly further */
+    3px 3px 0px #6a9abf,   /* third layer, gives the 3D depth */
+    4px 4px 8px rgba(0,0,0,0.15); /* soft blur at the end */
+}
+
+.menuSubtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #5a7a9a;
+}
+
+/* two buttons side by side */
+.menuActions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.menuActionBtn {
+  width: 260px;
+  padding: 30px 24px;  /* taller than before */
+  border-radius: 22px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.menuActionBtn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.15);
+}
+
+
+/* primary button - filled purple */
+.menuActionPrimary {
+  background: rgba(255,255,255,0.72);
+  border: 2px solid rgba(42,74,107,0.35);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* secondary button - light outlined */
+.menuActionSecondary {
+  background: rgba(255,255,255,0.82);
+  border: 2px solid rgba(91,110,245,0.3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.menuBtnIcon {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.menuBtnLabel {
+  font-size: 1.1rem;  /* slightly bigger */
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+/* primary button text is white */
+.menuActionPrimary .menuBtnLabel {
+  color: #1e3a5f;
+}
+
+.menuBtnSub {
+  font-size: 0.88rem;
+  color: #5a7a9a;
+}
+.menuActionPrimary .menuBtnSub {
+  color: #5a7a9a;
+}
+
+/* tip box */
+.menuTip {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(91,110,245,0.2);
+  border-radius: 14px;
+  padding: 14px 22px;
+  color: #4a6a8a;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 500px;
+  backdrop-filter: blur(6px);
+}
+
+/* recently viewed bar */
+.recentBar {
+  width: min(700px, 92%);
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
+  padding: 16px 22px;
+  backdrop-filter: blur(8px);
+}
+
+.recentBarTitle {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2a4a6b;
+}
+
+.recentBarBooks {
+  display: flex;
+  gap: 16px;
+}
+
+/* each placeholder book slot */
+.recentBookSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.recentBookCover {
+  width: 100%;
+  height: 80px;
+  border-radius: 10px;
+  /* subtle shimmer placeholder color */
+  background: rgba(100,150,200,0.2);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.recentBookName {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(42,74,107,0.5);
+}
+
+/* modal dark overlay behind the popup */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,40,70,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* the white popup box */
+.modalBox {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255,255,255,0.8);
+  border-radius: 22px;
+  padding: 28px 30px;
+  width: min(560px, 92vw);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f3d81;
+}
+
+.modalSubtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #5a7a9a;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modalLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2a4a6b;
+}
+
+.modalInput {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(42,74,107,0.2);
+  background: rgba(255,255,255,0.8);
+  color: #1e3a5f;
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.modalInput:focus {
+  border-color: #6d6af0;
+}
+
+.modalFileInput {
+  font-size: 0.88rem;
+  color: #2a4a6b;
+}
+
+/* list of selected files */
+.modalFileList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(42,74,107,0.12);
+  padding: 8px;
+  background: rgba(255,255,255,0.5);
+}
+
+.modalFileRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+}
+
+.modalFileName {
+  flex: 1;
+  color: #1e3a5f;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modalFileSize {
+  color: #5a7a9a;
+  font-size: 0.8rem;
+}
+
+.modalFileStatus {
+  font-size: 0.8rem;
+  color: #2a4a6b;
+}
+
+.modalNoFiles {
+  margin: 0;
+  color: #5a7a9a;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.modalError {
+  margin: 0;
+  color: #e05555;
+  font-size: 0.85rem;
+  background: rgba(224,85,85,0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+/* modal bottom buttons */
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.modalBtnPrimary {
+  flex: 1;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  background: #5b6ef5;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.modalBtnPrimary:hover:enabled {
+  background: #4a5ee0;
+}
+
+.modalBtnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modalBtnSecondary {
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(42,74,107,0.2);
+  background: rgba(255,255,255,0.7);
+  color: #2a4a6b;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.modalBtnSecondary:hover {
+  background: rgba(255,255,255,0.95);
+}
+
+/* fullscreen reader mode */
+.readerFullscreen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.readerFullscreenImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* floating controls at bottom in fullscreen */
+.readerFullscreenControls {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.readerFullscreenBtn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.readerFullscreenBtn:hover:enabled {
+  background: rgba(255,255,255,0.15);
+}
+
+.readerFullscreenBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.readerFullscreenCount {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* exit fullscreen button top right corner */
+.exitFullscreenBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.85);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s;
+}
+
+.exitFullscreenBtn:hover {
+  background: rgba(0,0,0,0.75);
+}
+
+/* fullscreen button shown in normal reader mode */
+.fullscreenToggleBtn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(42,74,107,0.2);
+  border-radius: 10px;
+  padding: 6px 14px;
+  color: #2a4a6b;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s ease;
+}
+
+.fullscreenToggleBtn:hover {
+  background: rgba(255,255,255,0.88);
 }

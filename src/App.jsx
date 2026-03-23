@@ -104,41 +104,50 @@ function HeaderBar() {
 
 function MenuPage({ onOpenLibrary, onEditStorybooks }) {
   return (
-    <div className="content">
-      <div className="mainCard">
-        <div className="cardTitleRow">
-          <span className="cardTitleIcon" aria-hidden="true">
-            📖
-          </span>
-          <h1 className="cardTitle">Storybook Menu</h1>
-        </div>
+    <div className="menuPage">
 
-        <div className="cardButtons">
-          <button className="bigBtn bigBtnPrimary" onClick={onOpenLibrary}>
-            Open Library
-          </button>
+      {/* title at the top */}
+      <div className="menuTop">
+        <h1 className="menuTitle">VSD Storybook</h1>
+        <span className="menuEmoji">📖</span>
+        <p className="menuSubtitle">Choose how you want to get started</p>
+      </div>
 
-          <button className="bigBtn" onClick={onEditStorybooks}>
-            Edit Storybooks
-          </button>
+      {/* two action buttons */}
+      <div className="menuActions">
+        <button className="menuActionBtn menuActionPrimary" onClick={onOpenLibrary}>
+          <span className="menuBtnIcon">📚</span>
+          <span className="menuBtnLabel">Open Library</span>
+          <span className="menuBtnSub">Read a storybook</span>
+        </button>
+
+        <button className="menuActionBtn menuActionSecondary" onClick={onEditStorybooks}>
+          <span className="menuBtnIcon">✏️</span>
+          <span className="menuBtnLabel">Edit Storybooks</span>
+          <span className="menuBtnSub">Upload and add hotspots</span>
+        </button>
+      </div>
+
+      {/* recently viewed section at the bottom */}
+      <div className="recentBar">
+        <p className="recentBarTitle">Recently Viewed</p>
+        <div className="recentBarBooks">
+          {/* 3 placeholder slots - real books will show here later */}
+          <div className="recentBookSlot">
+            <div className="recentBookCover" />
+            <p className="recentBookName">Book title</p>
+          </div>
+          <div className="recentBookSlot">
+            <div className="recentBookCover" />
+            <p className="recentBookName">Book title</p>
+          </div>
+          <div className="recentBookSlot">
+            <div className="recentBookCover" />
+            <p className="recentBookName">Book title</p>
+          </div>
         </div>
       </div>
 
-      <div className="recentSection">
-        <div className="recentHeader">Recent Storybooks</div>
-
-        <div className="recentList">
-          <RecentRow />
-          <RecentRow />
-          <RecentRow />
-        </div>
-
-        <div className="viewLibraryRow">
-          <button className="viewLibraryBtn" type="button" onClick={onOpenLibrary}>
-            View Library →
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
@@ -222,16 +231,83 @@ function BookCard({ title, coverUrl, onOpen }) {
 
 function ReaderPage({ onBack, pages }) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const totalPages = pages.length;
   const imageUrl = pages[currentPage];
 
+  // pressing Escape exits fullscreen
+  useState(() => {
+    function handleKey(e) {
+      if (e.key === "Escape") setIsFullscreen(false);
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  // fullscreen mode - image takes entire screen
+  if (isFullscreen) {
+    return (
+      <div className="readerFullscreen">
+        <img
+          src={imageUrl}
+          alt={`Page ${currentPage + 1}`}
+          className="readerFullscreenImg"
+        />
+
+        {/* page switcher floats at the bottom */}
+        {totalPages > 1 && (
+          <div className="readerFullscreenControls">
+            <button
+              className="readerFullscreenBtn"
+              onClick={() => setCurrentPage(p => p - 1)}
+              disabled={currentPage === 0}
+            >
+              ← Prev
+            </button>
+            <span className="readerFullscreenCount">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              className="readerFullscreenBtn"
+              onClick={() => setCurrentPage(p => p + 1)}
+              disabled={currentPage === totalPages - 1}
+            >
+              Next →
+            </button>
+          </div>
+        )}
+
+        {/* exit fullscreen button top right */}
+        <button
+          className="exitFullscreenBtn"
+          onClick={() => setIsFullscreen(false)}
+          title="Exit fullscreen (Esc)"
+        >
+          ✕ Exit Fullscreen
+        </button>
+      </div>
+    );
+  }
+
+  // normal mode
   return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
         ← Back to Library
       </button>
 
-      <div className="readerShell" style={{ overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* fullscreen toggle button */}
+      <button
+        className="fullscreenToggleBtn"
+        onClick={() => setIsFullscreen(true)}
+        title="Go fullscreen"
+      >
+        ⛶ Fullscreen
+      </button>
+
+      <div className="readerShell"
+        style={{ overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -257,7 +333,6 @@ function ReaderPage({ onBack, pages }) {
     </div>
   );
 }
-
 /* ---------------- EDITOR ---------------- */
 
 function EditorPage({ onBack, pages }) {
@@ -510,48 +585,80 @@ function ImportFiles({ onClose, onBookUploaded }) {
   }
 
   return (
-    <div style={{ position: 'fixed', left: 16, right: 16, top: 90, zIndex: 60 }}>
-      <div style={{ margin: '0 auto', maxWidth: 800, padding: 12, borderRadius: 8, background: '#0f1720', border: '1px solid rgba(255,255,255,0.06)', color: 'white' }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+    <div className="modalOverlay">
+      <div className="modalBox">
+
+        {/* modal title */}
+        <h2 className="modalTitle">📚 Upload a Storybook</h2>
+        <p className="modalSubtitle">Select multiple images — they become pages in order</p>
+
+        {/* book title input */}
+        <div className="modalField">
+          <label className="modalLabel">Book Title</label>
           <input
             type="text"
-            placeholder="Book title"
+            placeholder="e.g. The Very Hungry Caterpillar"
             value={bookTitle}
             onChange={(e) => setBookTitle(e.target.value)}
-            style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.9rem' }}
+            className="modalInput"
           />
-          <input type="file" multiple accept="image/png, image/jpeg" onChange={handleSelect} />
-          <button onClick={handleUploadAll} disabled={busy || !files.length} className="bigBtn bigBtnPrimary">Upload All</button>
-          <button onClick={onClose} className="bigBtn">Close</button>
-        </div>
-        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: 4 }}>
-          Select multiple images — they become pages in order.
         </div>
 
-        {error && <div style={{ color: 'salmon', marginTop: 8 }}>{error}</div>}
+        {/* file picker */}
+        <div className="modalField">
+          <label className="modalLabel">Choose Pages (PNG or JPG)</label>
+          <input
+            type="file"
+            multiple
+            accept="image/png, image/jpeg"
+            onChange={handleSelect}
+            className="modalFileInput"
+          />
+        </div>
 
-        <div style={{ marginTop: 12 }}>
-          {files.length === 0 && <div>No files selected.</div>}
-          {files.map((f) => {
-            const r = results[f.name]
-            return (
-              <div key={f.name} style={{ padding: 6, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <strong>{f.name}</strong> — {Math.round(f.size / 1024)} KB
-                <div>
-                  {r ? (
-                    r.status === 'uploading' ? 'Uploading…' : r.status === 'done' ? (
-                      <a href={r.url} target="_blank" rel="noreferrer">View</a>
-                    ) : (
-                      <span style={{ color: 'salmon' }}>{r.error}</span>
-                    )
-                  ) : (
-                    'Not uploaded'
-                  )}
+        {/* error message if any files were rejected */}
+        {error && <p className="modalError">{error}</p>}
+
+        {/* file list - shows each file and its upload status */}
+        {files.length > 0 && (
+          <div className="modalFileList">
+            {files.map((f) => {
+              const r = results[f.name]
+              return (
+                <div key={f.name} className="modalFileRow">
+                  <span className="modalFileName">{f.name}</span>
+                  <span className="modalFileSize">{Math.round(f.size / 1024)} KB</span>
+                  <span className="modalFileStatus">
+                    {r ? (
+                      r.status === 'uploading' ? '⏳ Uploading...' :
+                      r.status === 'done' ? '✅ Done' :
+                      <span style={{ color: '#e05555' }}>❌ {r.error}</span>
+                    ) : '⬜ Waiting'}
+                  </span>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+        )}
+
+        {files.length === 0 && (
+          <p className="modalNoFiles">No files selected yet.</p>
+        )}
+
+        {/* action buttons */}
+        <div className="modalActions">
+          <button
+            className="modalBtnPrimary"
+            onClick={handleUploadAll}
+            disabled={busy || !files.length}
+          >
+            {busy ? 'Uploading...' : '⬆ Upload All'}
+          </button>
+          <button className="modalBtnSecondary" onClick={onClose}>
+            Close
+          </button>
         </div>
+
       </div>
     </div>
   )
