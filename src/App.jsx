@@ -1,6 +1,7 @@
 import { useState } from "react";
 import EditorCanvas from "./components/canvas/EditorCanvas";
 import "./App.css";
+import SettingsPage from "./components/SettingsPage";
 // helpers for pushing images into the Supabase storage bucket
 import { uploadImage, getImageUrl } from './lib/storage'
 
@@ -8,6 +9,7 @@ function App() {
   // read or edit mode
   const [mode, setMode] = useState("read");
   const [page, setPage] = useState("menu");
+  const [previousPage, setPreviousPage] = useState("menu");
 
   const goReaderLibrary = () => {
     setMode("read");
@@ -19,10 +21,17 @@ function App() {
     setPage("library");
   };
 
+  const goSettings = () => {
+    if (page !== "settings") {
+      setPreviousPage(page);
+    }
+    setPage("settings");
+  };
+
   return (
     <div className="appBg">
       <div className="window">
-        <HeaderBar />
+        <HeaderBar onOpenSettings={goSettings} />
 
         {page === "menu" && (
           <MenuPage
@@ -45,6 +54,8 @@ function App() {
         {page === "reader" && <ReaderPage onBack={() => setPage("library")} />}
 
         {page === "editor" && <EditorPage onBack={() => setPage("library")} />}
+
+        {page === "settings" && <SettingsPage onBack={() => setPage(previousPage)} />}
       </div>
     </div>
   );
@@ -52,7 +63,7 @@ function App() {
 
 /* ---------------- HEADER ---------------- */
 
-function HeaderBar() {
+function HeaderBar({ onOpenSettings }) {
   return (
     <div className="headerBar">
       <div className="headerLeft">
@@ -61,7 +72,7 @@ function HeaderBar() {
       </div>
 
       <div className="headerRight">
-        <button className="iconBtn" title="Settings" aria-label="Settings">
+        <button className="iconBtn" title="Settings" aria-label="Settings" onClick={onOpenSettings}>
           <span className="iconSymbol">⚙️</span>
         </button>
         <button className="iconBtn" title="Help" aria-label="Help">
