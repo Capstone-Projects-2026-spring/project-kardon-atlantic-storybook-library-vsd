@@ -56,6 +56,38 @@ Laptop or mobile device
 
 Headphones (optional)
 
+## How to Use the Website 
+
+This is our first release: https://project-kardon-atlantic-storybook.onrender.com/
+
+### For Caretakers (Upload & Edit)
+1. Go to the live site
+2. Log in with your account (or register if first time).
+3. Use the menu to:
+   - **Upload Storybook**: Add a new book with title and cover image.
+   - **Hotspot Editor**: Open a page and draw hotspots (rectangles or circles) on the image. Add vocabulary words to each hotspot.
+   - **Share Book**: Share with other users so they can view (read-only).
+
+### For Children (Reading Mode)
+1. Open the site and log in (or use a shared link from caretaker).
+2. Select a book from the library.
+3. Navigate through pages.
+4. Click on any hotspot (colored region) to hear the vocabulary word spoken aloud (TTS).
+
+## How to Run Locally
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm 
+- Supabase project (with URL and anon key)
+
+### Setup
+1. Clone the repository
+2. Install dependencies: npm install
+3. Create .env file in the root and add your Supabase credentials
+4. Start the development server: npm run dev
+5. Open http://localhost:5173 in your browser.
+
 ## Collaborators
 
 <div align="center">
