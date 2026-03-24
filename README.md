@@ -58,10 +58,10 @@ Headphones (optional)
 
 ## How to Use the Website 
 
-This is our first release: https://project-kardon-atlantic-storybook.onrender.com/
+This is our first release: https://github.com/Capstone-Projects-2026-spring/project-kardon-atlantic-storybook-library-vsd/releases/tag/v1.0.0 
 
 ### For Caretakers (Upload & Edit)
-1. Go to the live site
+1. Go to the live site: https://project-kardon-atlantic-storybook.onrender.com/
 2. Log in with your account (or register if first time).
 3. Use the menu to:
    - **Upload Storybook**: Add a new book with title and cover image.
@@ -69,7 +69,7 @@ This is our first release: https://project-kardon-atlantic-storybook.onrender.co
    - **Share Book**: Share with other users so they can view (read-only).
 
 ### For Children (Reading Mode)
-1. Open the site and log in (or use a shared link from caretaker).
+1. Open the site and log in (or use a shared link from caretaker): https://project-kardon-atlantic-storybook.onrender.com/
 2. Select a book from the library.
 3. Navigate through pages.
 4. Click on any hotspot (colored region) to hear the vocabulary word spoken aloud (TTS).
