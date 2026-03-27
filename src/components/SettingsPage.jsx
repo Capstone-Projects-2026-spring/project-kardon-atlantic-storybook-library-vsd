@@ -1,22 +1,27 @@
 import { useState } from "react";
 
 function SettingsPage({ onBack }) {
+  // keeps track of which section is currently open (speech, display, account)
   const [openSection, setOpenSection] = useState(null);
 
+  // toggles dropdown open/close
   function toggleSection(sectionName) {
     setOpenSection(openSection === sectionName ? null : sectionName);
   }
 
   return (
     <div className="content">
+      {/* back button returns to previous page */}
       <button className="backBtn" onClick={onBack}>
         ← Back
       </button>
 
+      {/* page title */}
       <h1 className="pageTitle" style={{ marginTop: "10px", marginBottom: "20px" }}>
         Settings
       </h1>
 
+      {/* centered container for all settings sections */}
       <div
         className="editorRight"
         style={{
@@ -25,11 +30,14 @@ function SettingsPage({ onBack }) {
           margin: "0 auto",
         }}
       >
+
+        {/* ---------------- SPEECH SECTION ---------------- */}
         <div
           className="toolSection"
           style={{ cursor: "pointer" }}
           onClick={() => toggleSection("speech")}
         >
+          {/* header row */}
           <div
             style={{
               display: "flex",
@@ -39,6 +47,8 @@ function SettingsPage({ onBack }) {
             }}
           >
             <span style={{ width: "24px" }} />
+
+            {/* section title */}
             <p
               className="toolLabel"
               style={{
@@ -49,6 +59,8 @@ function SettingsPage({ onBack }) {
             >
               Speech
             </p>
+
+            {/* arrow indicator */}
             <span
               style={{
                 width: "24px",
@@ -63,6 +75,7 @@ function SettingsPage({ onBack }) {
             </span>
           </div>
 
+          {/* dropdown content */}
           {openSection === "speech" && (
             <div style={{ marginTop: "14px" }}>
               <div
@@ -83,6 +96,7 @@ function SettingsPage({ onBack }) {
           )}
         </div>
 
+        {/* ---------------- DISPLAY SECTION ---------------- */}
         <div
           className="toolSection"
           style={{ cursor: "pointer" }}
@@ -97,6 +111,7 @@ function SettingsPage({ onBack }) {
             }}
           >
             <span style={{ width: "24px" }} />
+
             <p
               className="toolLabel"
               style={{
@@ -107,6 +122,7 @@ function SettingsPage({ onBack }) {
             >
               Display
             </p>
+
             <span
               style={{
                 width: "24px",
@@ -141,6 +157,7 @@ function SettingsPage({ onBack }) {
           )}
         </div>
 
+        {/* ---------------- ACCOUNT SECTION ---------------- */}
         <div
           className="toolSection"
           style={{ cursor: "pointer" }}
@@ -155,6 +172,7 @@ function SettingsPage({ onBack }) {
             }}
           >
             <span style={{ width: "24px" }} />
+
             <p
               className="toolLabel"
               style={{
@@ -165,6 +183,7 @@ function SettingsPage({ onBack }) {
             >
               Account
             </p>
+
             <span
               style={{
                 width: "24px",
@@ -198,6 +217,7 @@ function SettingsPage({ onBack }) {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

@@ -99,12 +99,7 @@ function HeaderBar({ onOpenSettings }) {
       </div>
 
       <div className="headerRight">
-        <button
-          className="iconBtn"
-          title="Settings"
-          aria-label="Settings"
-          onClick={onOpenSettings}
-        >
+        <button className="iconBtn" title="Settings" aria-label="Settings" onClick={onOpenSettings}>
           <span className="iconSymbol">⚙️</span>
         </button>
         <button className="iconBtn" title="Help" aria-label="Help">
@@ -262,34 +257,422 @@ function ReaderPage({ onBack, pages }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  // fullscreen mode - image takes entire screen
   if (isFullscreen) {
     return (
       <div className="readerFullscreen">
-        <img src={imageUrl} alt={`Page ${currentPage + 1}`} className="readerFullscreenImg" />
+        <img
+          src={imageUrl}
+          alt={`Page ${currentPage + 1}`}
+          className="readerFullscreenImg"
+        />
 
+        {/* page switcher floats at the bottom */}
         {totalPages > 1 && (
           <div className="readerFullscreenControls">
-            <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>← Prev</button>
-            <span>{currentPage + 1} / {totalPages}</span>
-            <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages - 1}>Next →</button>
+            <button
+              className="readerFullscreenBtn"
+              onClick={() => setCurrentPage(p => p - 1)}
+              disabled={currentPage === 0}
+            >
+              ← Prev
+            </button>
+            <span className="readerFullscreenCount">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              className="readerFullscreenBtn"
+              onClick={() => setCurrentPage(p => p + 1)}
+              disabled={currentPage === totalPages - 1}
+            >
+              Next →
+            </button>
           </div>
         )}
 
-        <button onClick={() => setIsFullscreen(false)}>✕ Exit Fullscreen</button>
+        {/* exit fullscreen button top right */}
+        <button
+          className="exitFullscreenBtn"
+          onClick={() => setIsFullscreen(false)}
+          title="Exit fullscreen (Esc)"
+        >
+          ✕ Exit Fullscreen
+        </button>
       </div>
     );
   }
 
+  // normal mode
   return (
     <div className="content">
-      <button className="backBtn" onClick={onBack}>← Back to Library</button>
-      <button onClick={() => setIsFullscreen(true)}>⛶ Fullscreen</button>
+      <button className="backBtn" onClick={onBack}>
+        ← Back to Library
+      </button>
 
-      <div className="readerShell">
-        {imageUrl ? <img src={imageUrl} alt="" /> : <div>No pages available.</div>}
+      {/* fullscreen toggle button */}
+      <button
+        className="fullscreenToggleBtn"
+        onClick={() => setIsFullscreen(true)}
+        title="Go fullscreen"
+      >
+        ⛶ Fullscreen
+      </button>
+
+      <div className="readerShell"
+        style={{ overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={`Page ${currentPage + 1}`}
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
+          />
+        ) : (
+          <div className="readerText">No pages available.</div>
+        )}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="pageSwitcher">
+          <button className="pageBtn" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>
+            ← Prev
+          </button>
+          <span className="pageCount">{currentPage + 1} / {totalPages}</span>
+          <button className="pageBtn" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages - 1}>
+            Next →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+/* ---------------- EDITOR ---------------- */
+
+function EditorPage({ onBack, pages }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = pages.length;
+  const imageUrl = pages[currentPage - 1];
+
+  const [hotspots, setHotspots] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [shapeMode, setShapeMode] = useState("rectangle");
+
+  const [comment, setComment] = useState("");
+
+  const selectedHotspot = hotspots.find((h) => h.id === selectedId) || null;
+  const pageHotspots = hotspots.filter((h) => h.page === currentPage);
+
+  const handleHotspotCreated = ({ coordinates, shape_type, page }) => {
+    const id = `hs_${Date.now()}`;
+    setHotspots([...hotspots, {
+      id, word: `word${hotspots.length + 1}`, coordinates, shape_type, page,
+    }]);
+    setSelectedId(id);
+  };
+
+  const handleSelect = (id) => setSelectedId(id);
+
+  const handleMove = (id, newCoords) => {
+    setHotspots(hotspots.map((h) => h.id === id ? { ...h, coordinates: newCoords } : h));
+  };
+
+  const handleUpdateWord = (word) => {
+    if (!selectedId) return;
+    setHotspots(hotspots.map((h) => h.id === selectedId ? { ...h, word } : h));
+  };
+
+  const handleUpdateSize = (size) => {
+    if (!selectedHotspot) return;
+    const s = Math.max(10, Math.min(200, size));
+    let newCoords;
+    if (selectedHotspot.shape_type === "circle") {
+      newCoords = { ...selectedHotspot.coordinates, radius: s };
+    } else {
+      const ratio = selectedHotspot.coordinates.width / selectedHotspot.coordinates.height;
+      newCoords = { ...selectedHotspot.coordinates, width: s, height: s / ratio };
+    }
+    setHotspots(hotspots.map((h) => h.id === selectedId ? { ...h, coordinates: newCoords } : h));
+  };
+
+  const handleDelete = (id) => {
+    setHotspots(hotspots.filter((h) => h.id !== id));
+    if (selectedId === id) setSelectedId(null);
+  };
+
+  function goNextPage() { if (currentPage < totalPages) setCurrentPage(currentPage + 1); }
+  function goPrevPage() { if (currentPage > 1) setCurrentPage(currentPage - 1); }
+  function saveComment() { alert("Comment saved!"); }
+
+  return (
+    <div className="content">
+      <button className="backBtn" onClick={onBack}>
+        ← Back to Library
+      </button>
+
+      <h2 className="pageTitle" style={{ marginTop: "10px" }}>Edit Mode</h2>
+
+      <div className="editorLayout">
+        {/* left side: Konva canvas + page switcher */}
+        <div className="editorLeft">
+          <div className="editorCanvas" style={{ padding: 0, overflow: "hidden" }}>
+            <EditorCanvas
+              hotspots={hotspots}
+              shapeMode={shapeMode}
+              currentPage={currentPage}
+              onHotspotCreated={handleHotspotCreated}
+              onSelect={handleSelect}
+              onMove={handleMove}
+              imageUrl={imageUrl}
+            />
+          </div>
+
+          <div className="pageSwitcher">
+            <button className="pageBtn" onClick={goPrevPage} disabled={currentPage === 1}>← Prev</button>
+            <span className="pageCount">{currentPage} / {totalPages}</span>
+            <button className="pageBtn" onClick={goNextPage} disabled={currentPage === totalPages}>Next →</button>
+          </div>
+        </div>
+
+        {/* right side: tools */}
+        <div className="editorRight">
+          {/* shape mode picker */}
+          <div className="toolSection">
+            <p className="toolLabel">Draw Hotspot</p>
+            <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: "0.8rem" }}>
+              Click & drag on the image to create a hotspot
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className={`bigBtn ${shapeMode === "rectangle" ? "bigBtnPrimary" : ""}`}
+                style={{ flex: 1 }}
+                onClick={() => setShapeMode("rectangle")}
+              >
+                Rectangle
+              </button>
+              <button
+                className={`bigBtn ${shapeMode === "circle" ? "bigBtnPrimary" : ""}`}
+                style={{ flex: 1 }}
+                onClick={() => setShapeMode("circle")}
+              >
+                Circle
+              </button>
+            </div>
+          </div>
+
+          {/* hotspot list */}
+          {pageHotspots.length > 0 && (
+            <div className="toolSection">
+              <p className="toolLabel">Hotspots on this page ({pageHotspots.length})</p>
+              <div className="hotspotList">
+                {pageHotspots.map((h) => (
+                  <div
+                    key={h.id}
+                    className="hotspotTag"
+                    onClick={() => setSelectedId(h.id)}
+                    style={{
+                      cursor: "pointer",
+                      border: selectedId === h.id ? "1px solid #6d6af0" : "1px solid transparent",
+                    }}
+                  >
+                    <span>{h.word} ({Math.round(h.coordinates.x)}, {Math.round(h.coordinates.y)})</span>
+                    <button className="removeBtn" onClick={(e) => { e.stopPropagation(); handleDelete(h.id); }}>
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* selected hotspot editor */}
+          {selectedHotspot && (
+            <div className="toolSection">
+              <p className="toolLabel">Edit Hotspot</p>
+              <input
+                className="wordInput"
+                type="text"
+                placeholder="vocabulary word"
+                value={selectedHotspot.word}
+                onChange={(e) => handleUpdateWord(e.target.value)}
+              />
+              <label style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem" }}>
+                Size
+                <input
+                  type="range" min="10" max="200"
+                  value={selectedHotspot.shape_type === "circle"
+                    ? selectedHotspot.coordinates.radius
+                    : selectedHotspot.coordinates.width}
+                  onChange={(e) => handleUpdateSize(parseInt(e.target.value))}
+                  style={{ width: "100%", marginTop: 4 }}
+                />
+              </label>
+              <button
+                className="bigBtn"
+                style={{ background: "rgba(255,100,100,0.25)", color: "#ff6b6b" }}
+                onClick={() => handleDelete(selectedHotspot.id)}
+              >
+                Delete Hotspot
+              </button>
+            </div>
+          )}
+
+          {/* comment section */}
+          <div className="toolSection">
+            <p className="toolLabel">Page Comment (optional)</p>
+            <textarea
+              className="commentBox"
+              placeholder="leave a note for yourself or other editors..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+            />
+            <button className="bigBtn" onClick={saveComment}>
+              Save Comment
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-export default App;
+export default App; 
+
+/* ---------------- UPLOADER ---------------- */
+
+// modal used by the library page to pick multiple images and push them
+// into the Supabase `image` bucket. shows status per file and a close
+// button when done.
+/* ---------------- Upload Files ---------------- */
+
+function ImportFiles({ onClose, onBookUploaded }) {
+  const [files, setFiles] = useState([])
+  const [bookTitle, setBookTitle] = useState('')
+  const [results, setResults] = useState({})
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(null)
+
+  // when the file input changes, keep only png/jpg and warn about others
+  function handleSelect(e) {
+    setError(null)
+    const list = Array.from(e.target.files || [])
+    const allowed = list.filter(f => /image\/(png|jpeg|jpg)/.test(f.type))
+    const rejected = list.filter(f => !/image\/(png|jpeg|jpg)/.test(f.type))
+    if (rejected.length) setError(`Rejected: ${rejected.map(r => r.name).join(', ')}`)
+    setFiles(allowed)
+    setResults({})
+  }
+
+  // upload all files as pages of a single book
+  async function handleUploadAll() {
+    if (!files.length) return
+    setBusy(true)
+    const newResults = {}
+    const pageUrls = []
+
+    for (const f of files) {
+      newResults[f.name] = { status: 'uploading' }
+      setResults({ ...newResults })
+      try {
+        const path = await uploadImage(f)
+        if (!path) {
+          newResults[f.name] = { status: 'error', error: 'Upload failed' }
+        } else {
+          const url = getImageUrl(path)
+          newResults[f.name] = { status: 'done', path, url }
+          pageUrls.push(url)
+        }
+      } catch (e) {
+        newResults[f.name] = { status: 'error', error: e.message || String(e) }
+      }
+      setResults({ ...newResults })
+    }
+
+    // create one book with all successfully uploaded pages
+    if (pageUrls.length > 0) {
+      const title = bookTitle.trim() || `Storybook ${Date.now()}`
+      onBookUploaded(title, pageUrls)
+    }
+
+    setBusy(false)
+  }
+
+  return (
+    <div className="modalOverlay">
+      <div className="modalBox">
+
+        {/* modal title */}
+        <h2 className="modalTitle">📚 Upload a Storybook</h2>
+        <p className="modalSubtitle">Select multiple images — they become pages in order</p>
+
+        {/* book title input */}
+        <div className="modalField">
+          <label className="modalLabel">Book Title</label>
+          <input
+            type="text"
+            placeholder="e.g. The Very Hungry Caterpillar"
+            value={bookTitle}
+            onChange={(e) => setBookTitle(e.target.value)}
+            className="modalInput"
+          />
+        </div>
+
+        {/* file picker */}
+        <div className="modalField">
+          <label className="modalLabel">Choose Pages (PNG or JPG)</label>
+          <input
+            type="file"
+            multiple
+            accept="image/png, image/jpeg"
+            onChange={handleSelect}
+            className="modalFileInput"
+          />
+        </div>
+
+        {/* error message if any files were rejected */}
+        {error && <p className="modalError">{error}</p>}
+
+        {/* file list - shows each file and its upload status */}
+        {files.length > 0 && (
+          <div className="modalFileList">
+            {files.map((f) => {
+              const r = results[f.name]
+              return (
+                <div key={f.name} className="modalFileRow">
+                  <span className="modalFileName">{f.name}</span>
+                  <span className="modalFileSize">{Math.round(f.size / 1024)} KB</span>
+                  <span className="modalFileStatus">
+                    {r ? (
+                      r.status === 'uploading' ? '⏳ Uploading...' :
+                      r.status === 'done' ? '✅ Done' :
+                      <span style={{ color: '#e05555' }}>❌ {r.error}</span>
+                    ) : '⬜ Waiting'}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {files.length === 0 && (
+          <p className="modalNoFiles">No files selected yet.</p>
+        )}
+
+        {/* action buttons */}
+        <div className="modalActions">
+          <button
+            className="modalBtnPrimary"
+            onClick={handleUploadAll}
+            disabled={busy || !files.length}
+          >
+            {busy ? 'Uploading...' : '⬆ Upload All'}
+          </button>
+          <button className="modalBtnSecondary" onClick={onClose}>
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  )
+}
