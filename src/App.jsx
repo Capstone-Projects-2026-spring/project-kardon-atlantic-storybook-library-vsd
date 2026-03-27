@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EditorCanvas from "./components/canvas/EditorCanvas";
 import "./App.css";
+import SettingsPage from "./components/SettingsPage";
 // helpers for pushing images into the Supabase storage bucket
 import { uploadImage, getImageUrl } from './lib/storage'
 
@@ -8,6 +9,7 @@ function App() {
   // read or edit mode
   const [mode, setMode] = useState("read");
   const [page, setPage] = useState("menu");
+  const [previousPage, setPreviousPage] = useState("menu");
 
   // uploaded books: array of { title, pages: [url, url, ...] }
   const [books, setBooks] = useState([]);
@@ -29,10 +31,18 @@ function App() {
     setPage("library");
   };
 
+  const goSettings = () => {
+    if (page !== "settings") {
+      setPreviousPage(page);
+    }
+    setPage("settings");
+  };
+
   return (
     <div className="appBg">
       <div className="window">
-        <HeaderBar />
+        <HeaderBar onOpenSettings={goSettings} />
+
 
         {page === "menu" && (
           <MenuPage
@@ -70,6 +80,11 @@ function App() {
             pages={activeBook?.pages || []}
           />
         )}
+
+
+        {page === "settings" && (
+          <SettingsPage onBack={() => setPage(previousPage)} />
+        )}
       </div>
     </div>
   );
@@ -77,7 +92,8 @@ function App() {
 
 /* ---------------- HEADER ---------------- */
 
-function HeaderBar() {
+
+function HeaderBar({ onOpenSettings }) {
   return (
     <div className="headerBar">
       <div className="headerLeft">
@@ -86,7 +102,7 @@ function HeaderBar() {
       </div>
 
       <div className="headerRight">
-        <button className="iconBtn" title="Settings" aria-label="Settings">
+        <button className="iconBtn" title="Settings" aria-label="Settings" onClick={onOpenSettings}>
           <span className="iconSymbol">⚙️</span>
         </button>
         <button className="iconBtn" title="Help" aria-label="Help">
@@ -236,7 +252,7 @@ function ReaderPage({ onBack, pages }) {
   const imageUrl = pages[currentPage];
 
   // pressing Escape exits fullscreen
-  useState(() => {
+  useEffect(() => {
     function handleKey(e) {
       if (e.key === "Escape") setIsFullscreen(false);
     }
@@ -523,7 +539,8 @@ function EditorPage({ onBack, pages }) {
   );
 }
 
-export default App; 
+export default App;
+
 
 /* ---------------- UPLOADER ---------------- */
 
