@@ -1,0 +1,114 @@
+import { useState } from "react";
+import { uploadImage, getImageUrl } from "../lib/storage";
+
+function ImportFiles({ onClose, onBookUploaded }) {
+  const [files, setFiles] = useState([]);
+  const [bookTitle, setBookTitle] = useState("");
+  const [results, setResults] = useState({});
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  function handleSelect(e) {
+    setError(null);
+    const list = Array.from(e.target.files || []);
+    const allowed = list.filter((f) =>
+      /image\/(png|jpeg|jpg)/.test(f.type)
+    );
+    const rejected = list.filter(
+      (f) => !/image\/(png|jpeg|jpg)/.test(f.type)
+    );
+
+    if (rejected.length)
+      setError(`Rejected: ${rejected.map((r) => r.name).join(", ")}`);
+
+    setFiles(allowed);
+    setResults({});
+  }
+
+  async function handleUploadAll() {
+    if (!files.length) return;
+    setBusy(true);
+
+    const newResults = {};
+    const pageUrls = [];
+
+    for (const f of files) {
+      newResults[f.name] = { status: "uploading" };
+      setResults({ ...newResults });
+
+      try {
+        const path = await uploadImage(f);
+
+        if (!path) {
+          newResults[f.name] = {
+            status: "error",
+            error: "Upload failed",
+          };
+        } else {
+          const url = getImageUrl(path);
+          newResults[f.name] = { status: "done", path, url };
+          pageUrls.push(url);
+        }
+      } catch (e) {
+        newResults[f.name] = {
+          status: "error",
+          error: e.message || String(e),
+        };
+      }
+
+      setResults({ ...newResults });
+    }
+
+    if (pageUrls.length > 0) {
+      const title = bookTitle.trim() || `Storybook ${Date.now()}`;
+      onBookUploaded(title, pageUrls);
+    }
+
+    setBusy(false);
+  }
+
+  return (
+    <div className="modalOverlay">
+      <div className="modalBox">
+        <h2 className="modalTitle">📚 Upload a Storybook</h2>
+        <p className="modalSubtitle">
+          Select multiple images — they become pages in order
+        </p>
+
+        <div className="modalField">
+          <label className="modalLabel">Book Title</label>
+          <input
+            type="text"
+            value={bookTitle}
+            onChange={(e) => setBookTitle(e.target.value)}
+            className="modalInput"
+          />
+        </div>
+
+        <div className="modalField">
+          <input
+            type="file"
+            multiple
+            accept="image/png, image/jpeg"
+            onChange={handleSelect}
+          />
+        </div>
+
+        {error && <p className="modalError">{error}</p>}
+
+        <div className="modalActions">
+          <button
+            onClick={handleUploadAll}
+            disabled={busy || !files.length}
+          >
+            Upload All
+          </button>
+
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ImportFiles;
