@@ -6,14 +6,14 @@ import MenuPage from "./components/MenuPage";
 import LibraryPage from "./components/LibraryPage";
 import ReaderPage from "./components/ReaderPage";
 import EditorPage from "./components/EditorPage";
+import LoginPage from "./components/LoginPage";
 
 function App() {
-  // read or edit mode
+  // app state
   const [mode, setMode] = useState("read");
-  const [page, setPage] = useState("menu");
+  const [page, setPage] = useState("login"); // ← start on login
   const [previousPage, setPreviousPage] = useState("menu");
 
-  // uploaded books: array of { title, pages: [url, url, ...] }
   const [books, setBooks] = useState([]);
   const [activeBookIndex, setActiveBookIndex] = useState(null);
 
@@ -21,7 +21,8 @@ function App() {
     setBooks((prev) => [...prev, { title, pages }]);
   };
 
-  const activeBook = activeBookIndex !== null ? books[activeBookIndex] : null;
+  const activeBook =
+    activeBookIndex !== null ? books[activeBookIndex] : null;
 
   const goReaderLibrary = () => {
     setMode("read");
@@ -34,16 +35,21 @@ function App() {
   };
 
   const goSettings = () => {
-    if (page !== "settings") {
-      setPreviousPage(page);
-    }
+    if (page !== "settings") setPreviousPage(page);
     setPage("settings");
   };
 
   return (
     <div className="appBg">
       <div className="window">
-        <HeaderBar onOpenSettings={goSettings} />
+        {/* hide header on login */}
+        {page !== "login" && (
+          <HeaderBar onOpenSettings={goSettings} />
+        )}
+
+        {page === "login" && (
+          <LoginPage onEnter={() => setPage("menu")} />
+        )}
 
         {page === "menu" && (
           <MenuPage
