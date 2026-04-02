@@ -1,10 +1,16 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 
 function SettingsPage({ onBack }) {
   // keeps track of which section is currently open (speech, display, account)
+  const { user, signOut } = useAuth();
   const [openSection, setOpenSection] = useState(null);
 
+  const handleSignOut = async () => {
+    await signOut();
+    // App.jsx useEffect will detect user is null and redirect to login automatically
+  };
 
   // toggles dropdown open/close
   function toggleSection(sectionName) {
@@ -229,7 +235,9 @@ function SettingsPage({ onBack }) {
                   alignItems: "center",
                 }}
               >
-                Account settings will go here
+                <button className="bigBtn" onClick={(e) => { e.stopPropagation(); handleSignOut(); }}>
+                  Sign Out
+                </button>
               </div>
             </div>
           )}

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { uploadImage, getImageUrl } from "../lib/storage";
+import { useAuth } from "../context/AuthContext";
 
 function ImportFiles({ onClose, onBookUploaded }) {
+  const { user } = useAuth();
   const [files, setFiles] = useState([]);
   const [bookTitle, setBookTitle] = useState("");
   const [results, setResults] = useState({});
@@ -27,6 +29,8 @@ function ImportFiles({ onClose, onBookUploaded }) {
 
   async function handleUploadAll() {
     if (!files.length) return;
+    console.log('user:', user)
+    console.log('files:', files) 
     setBusy(true);
 
     const newResults = {};
@@ -37,7 +41,7 @@ function ImportFiles({ onClose, onBookUploaded }) {
       setResults({ ...newResults });
 
       try {
-        const path = await uploadImage(f);
+        const path = await uploadImage(f, user.id);
 
         if (!path) {
           newResults[f.name] = {
