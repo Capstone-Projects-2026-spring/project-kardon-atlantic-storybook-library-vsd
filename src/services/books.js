@@ -83,3 +83,28 @@ export async function deleteBook(bookId) {
 
   return { error }
 }
+
+// Get the last 3 books viewed or edited by the authenticated user
+export async function getRecentBooks() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: null, error: { message: 'Not authenticated' } }
+
+  const { data, error } = await supabase
+    .from('books')
+    .select('id, title, cover_image_url, updated_at')
+    .eq('user_id', user.id)
+    .order('updated_at', { ascending: false })
+    .limit(3)
+
+  return { data, error }
+}
+
+// Update a book's accessed timestamp (for recent books tracking)
+export async function updateBookAccessTime(bookId) {
+  const { error } = await supabase
+    .from('books')
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', bookId)
+
+  return { error }
+}

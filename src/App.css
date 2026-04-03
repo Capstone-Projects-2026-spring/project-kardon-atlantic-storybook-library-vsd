@@ -711,7 +711,8 @@
 }
 
 .recentBarBooks {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
@@ -721,7 +722,6 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 1;
 }
 
 .recentBookCover {
@@ -737,6 +737,9 @@
   margin: 0;
   font-size: 0.8rem;
   color: rgba(42,74,107,0.5);
+  text-align: center;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 /* modal dark overlay behind the popup */
