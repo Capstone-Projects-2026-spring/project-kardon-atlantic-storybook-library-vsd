@@ -4,8 +4,9 @@
 
 import { supabase } from './supabase'
 
-export async function uploadImage(file) {
-  const fileName = `${Date.now()}_${file.name}`
+export async function uploadImage(file, userId) {
+  console.log('uploadImage called with:', file, userId)
+  const fileName = `${userId}/${Date.now()}_${file.name}`
 
   const { data, error } = await supabase.storage.from('image').upload(fileName, file)
 

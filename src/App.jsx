@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
+import { useAuth } from "./context/AuthContext";
 import SettingsPage from "./components/SettingsPage";
 import HeaderBar from "./components/HeaderBar";
 import MenuPage from "./components/MenuPage";
@@ -9,10 +10,19 @@ import EditorPage from "./components/EditorPage";
 import LoginPage from "./components/LoginPage";
 
 function App() {
+  const { user } = useAuth();
   // app state
   const [mode, setMode] = useState("read");
   const [page, setPage] = useState("login"); // ← start on login
   const [previousPage, setPreviousPage] = useState("menu");
+
+  useEffect(() => {
+    if (user) {
+      setPage("menu");
+    } else {
+      setPage("login");
+    }
+  }, [user]);
 
   const [books, setBooks] = useState([]);
   const [activeBookIndex, setActiveBookIndex] = useState(null);
