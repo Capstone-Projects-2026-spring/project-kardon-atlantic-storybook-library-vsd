@@ -65,7 +65,10 @@ function ImportFiles({ onClose, onBookUploaded }) {
 
     if (pageUrls.length > 0) {
       const title = bookTitle.trim() || `Storybook ${Date.now()}`;
-      onBookUploaded(title, pageUrls);
+      await onBookUploaded(title, pageUrls);
+      onClose(); // close modal on success
+    } else {
+      setError("All uploads failed. Check your Supabase Storage bucket permissions.");
     }
 
     setBusy(false);
