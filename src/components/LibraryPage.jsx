@@ -5,7 +5,7 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
   const [showImport, setShowImport] = useState(false);
   const modeLabel = mode === "read" ? "Reader Mode" : "Edit Mode";
 
-return (
+  return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
         ← Back to Menu
@@ -19,15 +19,16 @@ return (
           </div>
         </div>
 
-        {/* only show upload button in edit mode */}
+        {/* Upload is only available while editing storybooks. */}
+        {mode === "edit" && (
           <button
             className="uploadBtn"
             type="button"
             onClick={() => setShowImport(true)}
-            style={{ cursor: "pointer", opacity: 1 }}
           >
             Upload Book
           </button>
+        )}
       </div>
 
       {showImport && (
@@ -47,7 +48,9 @@ return (
               padding: 40,
             }}
           >
-            No books yet. Click "Upload Book" to add one.
+            {mode === "edit"
+              ? 'No books yet. Click "Upload Book" to add one.'
+              : "No books yet."}
           </div>
         )}
 
@@ -55,7 +58,7 @@ return (
           <BookCard
             key={i}
             title={book.title}
-            coverUrl={book.pages[0]}
+            coverUrl={book.cover_image_url || book.pages?.[0]?.image_url || ""}
             onOpen={() => onOpenBook(i)}
           />
         ))}
@@ -64,4 +67,17 @@ return (
   );
 }
 
-export default LibraryPage; 
+function BookCard({ title, coverUrl, onOpen }) {
+  return (
+    <button type="button" className="bookCard" onClick={onOpen}>
+      {coverUrl ? (
+        <img className="bookCover" src={coverUrl} alt={`${title} cover`} />
+      ) : (
+        <div className="bookCover" aria-hidden="true" />
+      )}
+      <div className="bookTitle">{title}</div>
+    </button>
+  );
+}
+
+export default LibraryPage;
