@@ -65,3 +65,5 @@ return (
     </div>
   );
 }
+
+export default LibraryPage; 
