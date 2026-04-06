@@ -28,50 +28,58 @@ function ImportFiles({ onClose, onBookUploaded }) {
   }
 
   async function handleUploadAll() {
-    if (!files.length) return;
-    console.log('user:', user)
-    console.log('files:', files) 
+    if (!files.length || !user) {
+      if (!user) setError("You need to be signed in before uploading a book.");
+      return;
+    }
+
+    setError(null);
     setBusy(true);
 
     const newResults = {};
     const pageUrls = [];
 
-    for (const f of files) {
-      newResults[f.name] = { status: "uploading" };
-      setResults({ ...newResults });
+    try {
+      for (const f of files) {
+        newResults[f.name] = { status: "uploading" };
+        setResults({ ...newResults });
 
-      try {
-        const path = await uploadImage(f, user.id);
+        try {
+          const path = await uploadImage(f, user.id);
 
-        if (!path) {
+          if (!path) {
+            newResults[f.name] = {
+              status: "error",
+              error: "Upload failed",
+            };
+          } else {
+            const url = getImageUrl(path);
+            newResults[f.name] = { status: "done", path, url };
+            pageUrls.push(url);
+          }
+        } catch (e) {
           newResults[f.name] = {
             status: "error",
-            error: "Upload failed",
+            error: e.message || String(e),
           };
-        } else {
-          const url = getImageUrl(path);
-          newResults[f.name] = { status: "done", path, url };
-          pageUrls.push(url);
         }
-      } catch (e) {
-        newResults[f.name] = {
-          status: "error",
-          error: e.message || String(e),
-        };
+
+        setResults({ ...newResults });
       }
 
-      setResults({ ...newResults });
-    }
+      if (pageUrls.length === 0) {
+        setError("All uploads failed. Check your Supabase Storage bucket permissions.");
+        return;
+      }
 
-    if (pageUrls.length > 0) {
       const title = bookTitle.trim() || `Storybook ${Date.now()}`;
       await onBookUploaded(title, pageUrls);
-      onClose(); // close modal on success
-    } else {
-      setError("All uploads failed. Check your Supabase Storage bucket permissions.");
+      onClose();
+    } catch (e) {
+      setError(e.message || "We couldn't finish saving that book. Please try again.");
+    } finally {
+      setBusy(false);
     }
-
-    setBusy(false);
   }
 
   return (
