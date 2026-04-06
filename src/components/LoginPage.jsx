@@ -44,7 +44,8 @@ function LoginPage({ onEnter }) {
             style={{ marginBottom: 10 }}
           />
 
-        {/* Username */}
+       {/* Username - only needed when creating account */}
+       {isSignup && (
         <input
           className="wordInput"
           type="text"
@@ -53,6 +54,7 @@ function LoginPage({ onEnter }) {
           onChange={(e) => setUsername(e.target.value)}
           style={{ marginBottom: 10 }}
         />
+        )}
 
         {/* Password */}
         <input
@@ -85,7 +87,7 @@ function LoginPage({ onEnter }) {
         {/* Toggle signup/login */}
         <div style={{ marginTop: 16 }}>
           {isSignup ? (
-            <p style={{ fontSize: "0.9rem" }}>
+            <p style={{ fontSize: "0.9rem", color: "#2a4a6b" }}>
               Already have an account?{" "}
               <span
                 style={{ color: "#6d6af0", cursor: "pointer" }}
@@ -95,8 +97,8 @@ function LoginPage({ onEnter }) {
               </span>
             </p>
           ) : (
-            <p style={{ fontSize: "0.9rem" }}>
-              Don’t have an account?{" "}
+            <p style={{ fontSize: "0.9rem", color: "#2a4a6b" }}>
+             Don't have an account?{" "}
               <span
                 style={{ color: "#6d6af0", cursor: "pointer" }}
                 onClick={() => { setIsSignup(true); setError(null); }}

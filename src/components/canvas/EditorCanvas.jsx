@@ -29,10 +29,10 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
     onMouseLeave: () => setIsHovering(false),
     onClick: () => onSelect(id),
     onDragEnd: handleDragEnd,
-    fill: isHovering ? "#ff69b4" : "#ff69b4",  // hot pink
-    opacity: 0.6,
-    stroke: "#ff1493", // darker pink border
-    strokeWidth: isHovering ? 5 : 4, // thicker border
+    fill: "#6d6af0",        // consistent purple matching app theme
+    opacity: isHovering ? 0.75 : 0.55,
+    stroke: "#4a47c0",      // darker purple border
+    strokeWidth: isHovering ? 3 : 2,
   };
 
   if (shape_type === "circle") {
@@ -77,7 +77,6 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
     </>
   );
 }
-
 /* ---- main canvas component ---- */
 
 export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotspotCreated, onSelect, onMove, imageUrl }) {
@@ -145,6 +144,8 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
     >
       <Layer>
         {image && <KonvaImage image={image} width={CANVAS_W} height={CANVAS_H} listening={false} />}
+        {/* subtle dark overlay to reduce visual noise around hotspots */}
+        {image && <Rect x={0} y={0} width={CANVAS_W} height={CANVAS_H} fill="#000" opacity={0.18} listening={false} />}
         {!image && (
           <Text
             x={CANVAS_W / 2 - 80} y={CANVAS_H / 2 - 10}

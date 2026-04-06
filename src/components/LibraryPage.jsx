@@ -5,7 +5,7 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
   const [showImport, setShowImport] = useState(false);
   const modeLabel = mode === "read" ? "Reader Mode" : "Edit Mode";
 
-  return (
+return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
         ← Back to Menu
@@ -19,14 +19,17 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
           </div>
         </div>
 
-        <button
-          className="uploadBtn"
-          type="button"
-          onClick={() => setShowImport(true)}
-          style={{ cursor: "pointer", opacity: 1 }}
-        >
-          Upload Book
-        </button>
+        {/* only show upload button in edit mode */}
+        {mode === "edit" && (
+          <button
+            className="uploadBtn"
+            type="button"
+            onClick={() => setShowImport(true)}
+            style={{ cursor: "pointer", opacity: 1 }}
+          >
+            Upload Book
+          </button>
+        )}
       </div>
 
       {showImport && (
@@ -46,7 +49,7 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
               padding: 40,
             }}
           >
-            No books yet. Click "Upload Book" to add one.
+            {mode === "edit" ? 'No books yet. Click "Upload Book" to add one.' : "No books in your library yet."}
           </div>
         )}
 
@@ -54,7 +57,7 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
           <BookCard
             key={i}
             title={book.title}
-            coverUrl={book.pages[0]?.image_url}
+            coverUrl={book.pages[0]}
             onOpen={() => onOpenBook(i)}
           />
         ))}
@@ -62,23 +65,3 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
     </div>
   );
 }
-
-function BookCard({ title, coverUrl, onOpen }) {
-  return (
-    <button className="bookCard" onClick={onOpen} type="button">
-      {coverUrl ? (
-        <img
-          src={coverUrl}
-          alt={title}
-          className="bookCover"
-          style={{ objectFit: "cover", width: "100%", height: "100%" }}
-        />
-      ) : (
-        <div className="bookCover" aria-hidden="true" />
-      )}
-      <div className="bookTitle">{title}</div>
-    </button>
-  );
-}
-
-export default LibraryPage;
