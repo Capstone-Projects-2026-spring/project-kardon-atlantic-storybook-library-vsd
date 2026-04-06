@@ -20,7 +20,6 @@ return (
         </div>
 
         {/* only show upload button in edit mode */}
-        {mode === "edit" && (
           <button
             className="uploadBtn"
             type="button"
@@ -29,7 +28,6 @@ return (
           >
             Upload Book
           </button>
-        )}
       </div>
 
       {showImport && (
@@ -49,7 +47,7 @@ return (
               padding: 40,
             }}
           >
-            {mode === "edit" ? 'No books yet. Click "Upload Book" to add one.' : "No books in your library yet."}
+            No books yet. Click "Upload Book" to add one.
           </div>
         )}
 
