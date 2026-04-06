@@ -41,7 +41,15 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
       <>
         <Circle x={coordinates.x} y={coordinates.y} radius={r} {...sharedProps} />
         {isHovering && (
-          <Text x={coordinates.x + 20} y={coordinates.y - 10} text={word} fontSize={12} fill="#fff" />
+          <>
+            <Rect
+              x={coordinates.x + 18} y={coordinates.y - 16}
+              width={word.length * 8 + 12} height={20}
+              fill="#222" cornerRadius={4} opacity={0.85}
+            />
+            <Text x={coordinates.x + 24} y={coordinates.y - 12} text={word} fontSize={12} fill="#fff"
+              fontStyle="bold" />
+          </>
         )}
       </>
     );
@@ -56,7 +64,15 @@ function CanvasHotspot({ hotspot, onSelect, onMove }) {
         {...sharedProps}
       />
       {isHovering && (
-        <Text x={coordinates.x + coordinates.width + 5} y={coordinates.y - 10} text={word} fontSize={12} fill="#fff" />
+        <>
+          <Rect
+            x={coordinates.x + coordinates.width + 3} y={coordinates.y - 16}
+            width={word.length * 8 + 12} height={20}
+            fill="#222" cornerRadius={4} opacity={0.85}
+          />
+          <Text x={coordinates.x + coordinates.width + 9} y={coordinates.y - 12} text={word} fontSize={12} fill="#fff"
+            fontStyle="bold" />
+        </>
       )}
     </>
   );
