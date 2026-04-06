@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import EditorCanvas from "./canvas/EditorCanvas";
+import {
+  createHotspot,
+  getHotspotsByPageId,
+  updateHotspot,
+  deleteHotspot,
+} from "../services/hotspots";
 
-function EditorPage({ onBack, pages }) {
+function EditorPage({ onBack, pageData }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = pages.length;
-  const imageUrl = pages[currentPage - 1];
+  const totalPages = pageData.length;
+  const currentPageObj = pageData[currentPage - 1];
+  const imageUrl = currentPageObj?.image_url;
+  const pageId = currentPageObj?.id;
 
   const [hotspots, setHotspots] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -15,26 +23,70 @@ function EditorPage({ onBack, pages }) {
   const selectedHotspot = hotspots.find((h) => h.id === selectedId) || null;
   const pageHotspots = hotspots.filter((h) => h.page === currentPage);
 
-  const handleHotspotCreated = ({ coordinates, shape_type, page }) => {
-    const id = `hs_${Date.now()}`;
-    setHotspots([...hotspots, {
-      id, word: `word${hotspots.length + 1}`, coordinates, shape_type, page,
-    }]);
-    setSelectedId(id);
+  // Load hotspots from Supabase when page changes
+  const loadHotspots = useCallback(async () => {
+    if (!pageId) return;
+    const { data, error } = await getHotspotsByPageId(pageId);
+    if (error) {
+      console.error("Failed to load hotspots:", error.message);
+      return;
+    }
+    // Map DB rows to the shape the canvas expects
+    const mapped = (data || []).map((h) => ({
+      id: h.id,
+      word: h.word,
+      coordinates: h.coordinates,
+      shape_type: h.shape_type,
+      page: currentPage,
+    }));
+    setHotspots(mapped);
+    setSelectedId(null);
+  }, [pageId, currentPage]);
+
+  useEffect(() => {
+    loadHotspots();
+  }, [loadHotspots]);
+
+  const handleHotspotCreated = async ({ coordinates, shape_type, page }) => {
+    if (!pageId) return;
+    const word = `word${hotspots.length + 1}`;
+    const { data, error } = await createHotspot({
+      pageId,
+      word,
+      coordinates,
+      shapeType: shape_type,
+    });
+    if (error) {
+      console.error("Failed to create hotspot:", error.message);
+      return;
+    }
+    const newHotspot = {
+      id: data.id,
+      word: data.word,
+      coordinates: data.coordinates,
+      shape_type: data.shape_type,
+      page,
+    };
+    setHotspots((prev) => [...prev, newHotspot]);
+    setSelectedId(data.id);
   };
 
   const handleSelect = (id) => setSelectedId(id);
 
-  const handleMove = (id, newCoords) => {
-    setHotspots(hotspots.map((h) => h.id === id ? { ...h, coordinates: newCoords } : h));
+  const handleMove = async (id, newCoords) => {
+    setHotspots(hotspots.map((h) => (h.id === id ? { ...h, coordinates: newCoords } : h)));
+    const { error } = await updateHotspot(id, { coordinates: newCoords });
+    if (error) console.error("Failed to update hotspot position:", error.message);
   };
 
-  const handleUpdateWord = (word) => {
+  const handleUpdateWord = async (word) => {
     if (!selectedId) return;
-    setHotspots(hotspots.map((h) => h.id === selectedId ? { ...h, word } : h));
+    setHotspots(hotspots.map((h) => (h.id === selectedId ? { ...h, word } : h)));
+    const { error } = await updateHotspot(selectedId, { word });
+    if (error) console.error("Failed to update hotspot word:", error.message);
   };
 
-  const handleUpdateSize = (size) => {
+  const handleUpdateSize = async (size) => {
     if (!selectedHotspot) return;
     const s = Math.max(10, Math.min(200, size));
     let newCoords;
@@ -44,17 +96,27 @@ function EditorPage({ onBack, pages }) {
       const ratio = selectedHotspot.coordinates.width / selectedHotspot.coordinates.height;
       newCoords = { ...selectedHotspot.coordinates, width: s, height: s / ratio };
     }
-    setHotspots(hotspots.map((h) => h.id === selectedId ? { ...h, coordinates: newCoords } : h));
+    setHotspots(hotspots.map((h) => (h.id === selectedId ? { ...h, coordinates: newCoords } : h)));
+    const { error } = await updateHotspot(selectedId, { coordinates: newCoords });
+    if (error) console.error("Failed to update hotspot size:", error.message);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     setHotspots(hotspots.filter((h) => h.id !== id));
     if (selectedId === id) setSelectedId(null);
+    const { error } = await deleteHotspot(id);
+    if (error) console.error("Failed to delete hotspot:", error.message);
   };
 
-  function goNextPage() { if (currentPage < totalPages) setCurrentPage(currentPage + 1); }
-  function goPrevPage() { if (currentPage > 1) setCurrentPage(currentPage - 1); }
-  function saveComment() { alert("Comment saved!"); }
+  function goNextPage() {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  }
+  function goPrevPage() {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  }
+  function saveComment() {
+    alert("Comment saved!");
+  }
 
   return (
     <div className="content">
@@ -90,8 +152,8 @@ function EditorPage({ onBack, pages }) {
         <div className="editorRight">
           {/* shape mode picker */}
           <div className="toolSection">
-            <p className="toolLabel">Draw Hotspot</p>
-            <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: "0.8rem" }}>
+            <p className="toolLabel" style={{ color: "#222" }}>Draw Hotspot</p>
+            <p style={{ margin: 0, color: "rgba(0,0,0,0.45)", fontSize: "0.8rem" }}>
               Click & drag on the image to create a hotspot
             </p>
             <div style={{ display: "flex", gap: 8 }}>
@@ -115,7 +177,7 @@ function EditorPage({ onBack, pages }) {
           {/* hotspot list */}
           {pageHotspots.length > 0 && (
             <div className="toolSection">
-              <p className="toolLabel">Hotspots on this page ({pageHotspots.length})</p>
+              <p className="toolLabel" style={{ color: "#222" }}>Hotspots on this page ({pageHotspots.length})</p>
               <div className="hotspotList">
                 {pageHotspots.map((h) => (
                   <div
@@ -127,7 +189,7 @@ function EditorPage({ onBack, pages }) {
                       border: selectedId === h.id ? "1px solid #6d6af0" : "1px solid transparent",
                     }}
                   >
-                    <span>{h.word} ({Math.round(h.coordinates.x)}, {Math.round(h.coordinates.y)})</span>
+                    <span style={{ color: "#222" }}>{h.word} ({Math.round(h.coordinates.x)}, {Math.round(h.coordinates.y)})</span>
                     <button className="removeBtn" onClick={(e) => { e.stopPropagation(); handleDelete(h.id); }}>
                       ✕
                     </button>
@@ -140,7 +202,7 @@ function EditorPage({ onBack, pages }) {
           {/* selected hotspot editor */}
           {selectedHotspot && (
             <div className="toolSection">
-              <p className="toolLabel">Edit Hotspot</p>
+              <p className="toolLabel" style={{ color: "#222" }}>Edit Hotspot</p>
               <input
                 className="wordInput"
                 type="text"
@@ -148,7 +210,7 @@ function EditorPage({ onBack, pages }) {
                 value={selectedHotspot.word}
                 onChange={(e) => handleUpdateWord(e.target.value)}
               />
-              <label style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem" }}>
+              <label style={{ color: "rgba(0,0,0,0.7)", fontSize: "0.85rem" }}>
                 Size
                 <input
                   type="range" min="10" max="200"
@@ -171,7 +233,7 @@ function EditorPage({ onBack, pages }) {
 
           {/* comment section */}
           <div className="toolSection">
-            <p className="toolLabel">Page Comment (optional)</p>
+            <p className="toolLabel" style={{ color: "#222" }}>Page Comment (optional)</p>
             <textarea
               className="commentBox"
               placeholder="leave a note for yourself or other editors..."

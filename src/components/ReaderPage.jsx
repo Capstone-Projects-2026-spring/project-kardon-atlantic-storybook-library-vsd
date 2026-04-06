@@ -1,10 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import ReaderCanvas from "./canvas/ReaderCanvas";
+import { getHotspotsByPageId } from "../services/hotspots";
 
-function ReaderPage({ onBack, pages }) {
+function ReaderPage({ onBack, pageData }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const totalPages = pages.length;
-  const imageUrl = pages[currentPage];
+  const [hotspots, setHotspots] = useState([]);
+  const totalPages = pageData.length;
+  const currentPageObj = pageData[currentPage];
+  const imageUrl = currentPageObj?.image_url;
+  const pageId = currentPageObj?.id;
+
+  // Load hotspots for the current page
+  const loadHotspots = useCallback(async () => {
+    if (!pageId) { setHotspots([]); return; }
+    const { data, error } = await getHotspotsByPageId(pageId);
+    if (error) {
+      console.error("Failed to load hotspots:", error.message);
+      setHotspots([]);
+      return;
+    }
+    setHotspots(
+      (data || []).map((h) => ({
+        id: h.id,
+        word: h.word,
+        coordinates: h.coordinates,
+        shape_type: h.shape_type,
+      }))
+    );
+  }, [pageId]);
+
+  useEffect(() => {
+    loadHotspots();
+  }, [loadHotspots]);
 
   // pressing Escape exits fullscreen
   useEffect(() => {
@@ -15,7 +43,7 @@ function ReaderPage({ onBack, pages }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  // fullscreen mode - image takes entire screen
+  // fullscreen mode - image takes entire screen (no hotspots in fullscreen for now)
   if (isFullscreen) {
     return (
       <div className="readerFullscreen">
@@ -60,7 +88,7 @@ function ReaderPage({ onBack, pages }) {
     );
   }
 
-  // normal mode
+  // normal mode — use ReaderCanvas to show image + hotspots
   return (
     <div className="content">
       <button className="backBtn" onClick={onBack}>
@@ -77,14 +105,10 @@ function ReaderPage({ onBack, pages }) {
       </button>
 
       <div className="readerShell"
-        style={{ overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{ overflow: "hidden", padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={`Page ${currentPage + 1}`}
-            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
-          />
+          <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} />
         ) : (
           <div className="readerText">No pages available.</div>
         )}

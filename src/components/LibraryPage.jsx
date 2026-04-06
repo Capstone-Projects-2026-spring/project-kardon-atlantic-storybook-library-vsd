@@ -54,7 +54,7 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
           <BookCard
             key={i}
             title={book.title}
-            coverUrl={book.pages[0]}
+            coverUrl={book.pages[0]?.image_url}
             onOpen={() => onOpenBook(i)}
           />
         ))}

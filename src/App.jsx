@@ -45,7 +45,10 @@ function App() {
         return {
           id: book.id,
           title: book.title,
-          pages: (pages || []).map((p) => p.image_url),
+          pages: (pages || []).map((p) => ({
+            id: p.id,
+            image_url: p.image_url,
+          })),
         };
       })
     );
@@ -150,14 +153,14 @@ function App() {
         {page === "reader" && (
           <ReaderPage
             onBack={() => setPage("library")}
-            pages={activeBook?.pages || []}
+            pageData={activeBook?.pages || []}
           />
         )}
 
         {page === "editor" && (
           <EditorPage
             onBack={() => setPage("library")}
-            pages={activeBook?.pages || []}
+            pageData={activeBook?.pages || []}
           />
         )}
 
