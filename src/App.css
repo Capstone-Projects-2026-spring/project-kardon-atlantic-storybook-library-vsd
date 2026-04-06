@@ -63,6 +63,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  justify-content: center;
+  padding-left: 120px; /* offset for the right side buttons so title looks truly centered */
 }
 
 .appIcon {
@@ -128,10 +131,11 @@
 /* ---------- Menu Card ---------- */
 .mainCard {
   width: min(520px, 92%);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.75);
   padding: 26px 26px 22px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -151,7 +155,7 @@
 
 .cardTitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.92);
+  color: #0f3d81;
   font-size: 2rem;
   font-weight: 800;
 }
@@ -463,15 +467,21 @@
 .wordInput {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.07);
-  color: white;
+  border: 1.5px solid rgba(42,74,107,0.25);
+  background: rgba(255,255,255,0.85);
+  color: #1e3a5f;
   font-size: 0.95rem;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .wordInput:focus {
   border-color: #6d6af0;
+}
+
+.wordInput::placeholder {
+  color: #8aaac8;
 }
 
 .hotspotList {

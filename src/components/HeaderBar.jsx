@@ -3,7 +3,7 @@ function HeaderBar({ onOpenSettings }) {
     <div className="headerBar">
       <div className="headerLeft">
         <div className="appIcon" aria-hidden="true" />
-        <div className="appTitle">VSD Storybook Reader</div>
+        <div className="appTitle">Storybook</div>
       </div>
 
       <div className="headerRight">
