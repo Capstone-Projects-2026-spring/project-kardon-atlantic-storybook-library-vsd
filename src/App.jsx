@@ -3,6 +3,7 @@ import "./App.css";
 import { useAuth } from "./context/AuthContext";
 import { createBook, getMyBooks } from "./services/books";
 import { createPage, getPagesByBookId } from "./services/pages";
+import ErrorBoundary from "./components/ErrorBoundary";
 import SettingsPage from "./components/SettingsPage";
 import HeaderBar from "./components/HeaderBar";
 import MenuPage from "./components/MenuPage";
@@ -41,11 +42,18 @@ function App() {
     // For each book, load its pages so we have image URLs ready
     const booksWithPages = await Promise.all(
       (data || []).map(async (book) => {
-        const { data: pages } = await getPagesByBookId(book.id);
+        let pages = [];
+        try {
+          const { data: pageData } = await getPagesByBookId(book.id);
+          pages = pageData || [];
+        } catch (e) {
+          console.error(`Failed to load pages for book ${book.id}:`, e.message);
+        }
         return {
           id: book.id,
           title: book.title,
-          pages: (pages || []).map((p) => ({
+          cover_image_url: book.cover_image_url || null,
+          pages: pages.map((p) => ({
             id: p.id,
             image_url: p.image_url,
           })),
@@ -67,9 +75,9 @@ function App() {
       pageCount: pageUrls.length,
     });
 
-    if (error) {
-      console.error("Failed to create book:", error.message);
-      return;
+    if (error || !newBook) {
+      console.error("Failed to create book:", error?.message || "No data returned");
+      throw new Error(error?.message || "Failed to create book. Please try again.");
     }
 
     // Create a page row for each uploaded image
@@ -118,55 +126,57 @@ function App() {
   return (
     <div className="appBg">
       <div className="window">
-        {/* hide header on login */}
-        {page !== "login" && (
-          <HeaderBar onOpenSettings={goSettings} />
-        )}
+        <ErrorBoundary>
+          {/* hide header on login */}
+          {page !== "login" && (
+            <HeaderBar onOpenSettings={goSettings} />
+          )}
 
-        {page === "login" && (
-          <LoginPage onEnter={() => setPage("menu")} />
-        )}
+          {page === "login" && (
+            <LoginPage onEnter={() => setPage("menu")} />
+          )}
 
-        {page === "menu" && (
-          <MenuPage
-            onOpenLibrary={goReaderLibrary}
-            onEditStorybooks={goEditLibrary}
-          />
-        )}
+          {page === "menu" && (
+            <MenuPage
+              onOpenLibrary={goReaderLibrary}
+              onEditStorybooks={goEditLibrary}
+            />
+          )}
 
-        {page === "library" && (
-          <LibraryPage
-            mode={mode}
-            books={books}
-            onBack={() => {
-              setMode("read");
-              setPage("menu");
-            }}
-            onOpenBook={(index) => {
-              setActiveBookIndex(index);
-              setPage(mode === "read" ? "reader" : "editor");
-            }}
-            onBookUploaded={addBook}
-          />
-        )}
+          {page === "library" && (
+            <LibraryPage
+              mode={mode}
+              books={books}
+              onBack={() => {
+                setMode("read");
+                setPage("menu");
+              }}
+              onOpenBook={(index) => {
+                setActiveBookIndex(index);
+                setPage(mode === "read" ? "reader" : "editor");
+              }}
+              onBookUploaded={addBook}
+            />
+          )}
 
-        {page === "reader" && (
-          <ReaderPage
-            onBack={() => setPage("library")}
-            pageData={activeBook?.pages || []}
-          />
-        )}
+          {page === "reader" && (
+            <ReaderPage
+              onBack={() => setPage("library")}
+              pageData={activeBook?.pages || []}
+            />
+          )}
 
-        {page === "editor" && (
-          <EditorPage
-            onBack={() => setPage("library")}
-            pageData={activeBook?.pages || []}
-          />
-        )}
+          {page === "editor" && (
+            <EditorPage
+              onBack={() => setPage("library")}
+              pageData={activeBook?.pages || []}
+            />
+          )}
 
-        {page === "settings" && (
-          <SettingsPage onBack={() => setPage(previousPage)} />
-        )}
+          {page === "settings" && (
+            <SettingsPage onBack={() => setPage(previousPage)} />
+          )}
+        </ErrorBoundary>
       </div>
     </div>
   );
