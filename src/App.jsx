@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import { useAuth } from "./context/AuthContext";
-import { createBook, getMyBooks } from "./services/books";
+import { createBook, deleteBook, getMyBooks } from "./services/books";
 import { createPage, getPagesByBookId } from "./services/pages";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SettingsPage from "./components/SettingsPage";
@@ -80,18 +80,29 @@ function App() {
       throw new Error(error?.message || "Failed to create book. Please try again.");
     }
 
-    // Create a page row for each uploaded image
-    for (let i = 0; i < pageUrls.length; i++) {
-      const { error: pageErr } = await createPage({
-        bookId: newBook.id,
-        pageNumber: i + 1,
-        imageUrl: pageUrls[i],
-      });
-      if (pageErr) console.error(`Failed to save page ${i + 1}:`, pageErr.message);
-    }
+    try {
+      // Create a page row for each uploaded image
+      for (let i = 0; i < pageUrls.length; i++) {
+        const { error: pageErr } = await createPage({
+          bookId: newBook.id,
+          pageNumber: i + 1,
+          imageUrl: pageUrls[i],
+        });
 
-    // Refresh from database so state is in sync
-    await fetchBooks();
+        if (pageErr) {
+          throw new Error(`Failed to save page ${i + 1}: ${pageErr.message}`);
+        }
+      }
+
+      // Refresh from database so state is in sync
+      await fetchBooks();
+    } catch (e) {
+      const { error: rollbackErr } = await deleteBook(newBook.id);
+      if (rollbackErr) {
+        console.error("Failed to roll back incomplete book:", rollbackErr.message);
+      }
+      throw e;
+    }
   };
 
   const activeBook =
