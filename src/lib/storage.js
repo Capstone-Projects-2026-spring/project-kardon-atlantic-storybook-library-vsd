@@ -4,11 +4,12 @@
 
 import { supabase } from './supabase'
 
-export async function uploadImage(file, userId) {
-  console.log('uploadImage called with:', file, userId)
+export async function uploadImage(file, userId, contentType) {
   const fileName = `${userId}/${Date.now()}_${file.name}`
 
-  const { data, error } = await supabase.storage.from('image').upload(fileName, file)
+  const { data, error } = await supabase.storage
+    .from('image')
+    .upload(fileName, file, { contentType: contentType || file.type })
 
   if (error) {
     console.error('Supabase upload error:', error.message, error)
