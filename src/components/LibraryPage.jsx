@@ -3,10 +3,15 @@ import ImportFiles from "./ImportFiles";
 
 function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
   const [showImport, setShowImport] = useState(false);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const modeLabel = mode === "read" ? "Reader Mode" : "Edit Mode";
 
+  function closeMenu() {
+    setOpenMenuIndex(null);
+  }
+
   return (
-    <div className="content">
+    <div className="content" onClick={closeMenu}>
       <button className="backBtn" onClick={onBack}>
         ← Back to Menu
       </button>
@@ -24,7 +29,10 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
           <button
             className="uploadBtn"
             type="button"
-            onClick={() => setShowImport(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowImport(true);
+            }}
           >
             Upload Book
           </button>
@@ -60,6 +68,16 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
             title={book.title}
             coverUrl={book.cover_image_url || book.pages?.[0]?.image_url || ""}
             onOpen={() => onOpenBook(i)}
+            showMenuButton={mode === "edit"}
+            isMenuOpen={openMenuIndex === i}
+            onMenuToggle={(e) => {
+              e.stopPropagation();
+              setOpenMenuIndex(openMenuIndex === i ? null : i);
+            }}
+            onCloseMenu={(e) => {
+              e.stopPropagation();
+              setOpenMenuIndex(null);
+            }}
           />
         ))}
       </div>
@@ -67,15 +85,63 @@ function LibraryPage({ mode, books, onBack, onOpenBook, onBookUploaded }) {
   );
 }
 
-function BookCard({ title, coverUrl, onOpen }) {
+function BookCard({
+  title,
+  coverUrl,
+  onOpen,
+  showMenuButton,
+  isMenuOpen,
+  onMenuToggle,
+  onCloseMenu,
+}) {
   return (
     <button type="button" className="bookCard" onClick={onOpen}>
-      {coverUrl ? (
-        <img className="bookCover" src={coverUrl} alt={`${title} cover`} />
-      ) : (
-        <div className="bookCover" aria-hidden="true" />
-      )}
+      <div className="bookCoverWrap">
+        {coverUrl ? (
+          <img className="bookCover" src={coverUrl} alt={`${title} cover`} />
+        ) : (
+          <div className="bookCover" aria-hidden="true" />
+        )}
+
+        {showMenuButton && isMenuOpen && (
+          <div
+            className="bookMenuPopup"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="bookMenuClose"
+              onClick={onCloseMenu}
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+
+            <div className="bookMenuTitle">{title}</div>
+
+            <button type="button" className="bookMenuAction">
+              Rename
+            </button>
+
+            <button type="button" className="bookMenuAction">
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="bookTitle">{title}</div>
+
+      {showMenuButton && (
+        <button
+          type="button"
+          className="bookMenuBtn"
+          onClick={onMenuToggle}
+          aria-label={`Open menu for ${title}`}
+        >
+          ⋯
+        </button>
+      )}
     </button>
   );
 }
