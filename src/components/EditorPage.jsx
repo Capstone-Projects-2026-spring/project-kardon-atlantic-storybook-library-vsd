@@ -6,6 +6,8 @@ import {
   updateHotspot,
   deleteHotspot,
 } from "../services/hotspots";
+import { createComment } from "../services/comments";
+import { supabase } from "../supabaseClient";
 
 function EditorPage({ onBack, pageData }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,9 +116,63 @@ function EditorPage({ onBack, pageData }) {
   function goPrevPage() {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   }
-  function saveComment() {
-    alert("Comment saved!");
-  }
+
+  //function saveComment() {
+    //alert("Comment saved!");
+    //}
+    async function saveComment() {
+      console.log("SAVE CLICKED");
+    
+      try {
+        if (!comment.trim()) {
+          console.log("No comment text");
+          return;
+        }
+    
+        if (!pageId) {
+          console.log("No pageId");
+          return;
+        }
+    
+        console.log("pageId:", pageId);
+        console.log("comment:", comment);
+    
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+    
+        console.log("USER:", user);
+        console.log("USER ERROR:", userError);
+    
+        if (!user) {
+          console.log("No authenticated user");
+          return;
+        }
+    
+        const { data, error } = await createComment({
+          pageId,
+          userId: user.id,
+          content: comment,
+        });
+    
+        console.log("SUPABASE RESULT:", { data, error });
+    
+        if (error) {
+          console.error("INSERT FAILED:", error.message);
+          return;
+        }
+    
+        console.log("COMMENT SAVED SUCCESSFULLY");
+    
+        setComment("");
+      } catch (err) {
+        console.error("FATAL ERROR:", err);
+      }
+    }
+    
+    
+      
 
   return (
     <div className="content">
