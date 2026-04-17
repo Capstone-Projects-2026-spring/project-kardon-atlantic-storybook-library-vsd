@@ -33,7 +33,7 @@ function clampPoint(point, width, height) {
 
 /* ---- individual hotspot rendered on the Konva canvas ---- */
 
-function CanvasHotspot({ hotspot, onSelect, onMove, scale }) {
+function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
   const [isHovering, setIsHovering] = useState(false);
   const { id, word, coordinates, shape_type } = hotspot;
 
@@ -65,6 +65,39 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale }) {
     strokeWidth: isHovering ? 3 : 2,
   };
 
+  // figure out where to stick the label so it stays on screen
+  const labelW = word.length * 8 + 12;
+  const labelH = 20;
+  const MARGIN = 4;
+
+  // edges of the shape in display coords
+  const rightEdge = shape_type === "circle"
+    ? (coordinates.x + coordinates.radius) * sx
+    : (coordinates.x + coordinates.width) * sx;
+  const leftEdge = shape_type === "circle"
+    ? (coordinates.x - coordinates.radius) * sx
+    : coordinates.x * sx;
+  const topEdge = shape_type === "circle"
+    ? (coordinates.y - coordinates.radius) * sy
+    : coordinates.y * sy;
+  const bottomEdge = shape_type === "circle"
+    ? (coordinates.y + coordinates.radius) * sy
+    : (coordinates.y + coordinates.height) * sy;
+
+  // default spot: right side of shape, a bit above the top
+  let labelX = rightEdge + 3;
+  let labelY = topEdge - labelH + 4;
+
+  // if it goes off the right, swing over to the left
+  if (labelX + labelW > canvasW - MARGIN) labelX = leftEdge - labelW - 3;
+  // still out of bounds? just clamp it in
+  if (labelX < MARGIN) labelX = MARGIN;
+  if (labelX + labelW > canvasW - MARGIN) labelX = canvasW - labelW - MARGIN;
+
+  // if its off the top, put it below the shape instead
+  if (labelY < MARGIN) labelY = bottomEdge + MARGIN;
+  if (labelY + labelH > canvasH - MARGIN) labelY = canvasH - labelH - MARGIN;
+
   if (shape_type === "circle") {
     const r = (isHovering ? coordinates.radius + 3 : coordinates.radius) * sx;
     return (
@@ -73,11 +106,11 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale }) {
         {isHovering && (
           <>
             <Rect
-              x={coordinates.x * sx + 18} y={coordinates.y * sy - 16}
-              width={word.length * 8 + 12} height={20}
+              x={labelX} y={labelY}
+              width={labelW} height={labelH}
               fill="#222" cornerRadius={4} opacity={0.85}
             />
-            <Text x={coordinates.x * sx + 24} y={coordinates.y * sy - 12} text={word} fontSize={12} fill="#fff"
+            <Text x={labelX + 6} y={labelY + 4} text={word} fontSize={12} fill="#fff"
               fontStyle="bold" />
           </>
         )}
@@ -96,11 +129,11 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale }) {
       {isHovering && (
         <>
           <Rect
-            x={(coordinates.x + coordinates.width) * sx + 3} y={coordinates.y * sy - 16}
-            width={word.length * 8 + 12} height={20}
+            x={labelX} y={labelY}
+            width={labelW} height={labelH}
             fill="#222" cornerRadius={4} opacity={0.85}
           />
-          <Text x={(coordinates.x + coordinates.width) * sx + 9} y={coordinates.y * sy - 12} text={word} fontSize={12} fill="#fff"
+          <Text x={labelX + 6} y={labelY + 4} text={word} fontSize={12} fill="#fff"
             fontStyle="bold" />
         </>
       )}
@@ -229,7 +262,8 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
           )}
 
           {pageHotspots.map((h) => (
-            <CanvasHotspot key={h.id} hotspot={h} onSelect={onSelect} onMove={onMove} scale={scale} />
+            <CanvasHotspot key={h.id} hotspot={h} onSelect={onSelect} onMove={onMove} scale={scale}
+              canvasW={canvasW} canvasH={canvasH} />
           ))}
 
           {preview && preview.type === "circle" && (

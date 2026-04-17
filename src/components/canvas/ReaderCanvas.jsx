@@ -27,7 +27,7 @@ function getCanvasMetrics(containerSize, image) {
 
 /* ---- read-only hotspot rendered on the Konva canvas ---- */
 
-function ReadOnlyHotspot({ hotspot, scale }) {
+function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
   const [isHovering, setIsHovering] = useState(false);
   const { word, coordinates, shape_type } = hotspot;
 
@@ -45,6 +45,39 @@ function ReadOnlyHotspot({ hotspot, scale }) {
     strokeWidth: isHovering ? 5 : 3,
   };
 
+  // figure out where to stick the label so it doesnt fall off the canvas
+  const labelW = word.length * 9 + 12;
+  const labelH = 22;
+  const MARGIN = 4;
+
+  // edges of the shape in display coords
+  const rightEdge = shape_type === "circle"
+    ? (coordinates.x + coordinates.radius) * sx
+    : (coordinates.x + coordinates.width) * sx;
+  const leftEdge = shape_type === "circle"
+    ? (coordinates.x - coordinates.radius) * sx
+    : coordinates.x * sx;
+  const topEdge = shape_type === "circle"
+    ? (coordinates.y - coordinates.radius) * sy
+    : coordinates.y * sy;
+  const bottomEdge = shape_type === "circle"
+    ? (coordinates.y + coordinates.radius) * sy
+    : (coordinates.y + coordinates.height) * sy;
+
+  // start at the right side, slightly above the top
+  let labelX = rightEdge + 3;
+  let labelY = topEdge - labelH + 4;
+
+  // if its gonna spill off the right, flip it to the left
+  if (labelX + labelW > canvasW - MARGIN) labelX = leftEdge - labelW - 3;
+  // if its still off screen somehow, just clamp it
+  if (labelX < MARGIN) labelX = MARGIN;
+  if (labelX + labelW > canvasW - MARGIN) labelX = canvasW - labelW - MARGIN;
+
+  // if the label is off the top, drop it below the shape
+  if (labelY < MARGIN) labelY = bottomEdge + MARGIN;
+  if (labelY + labelH > canvasH - MARGIN) labelY = canvasH - labelH - MARGIN;
+
   if (shape_type === "circle") {
     const r = (isHovering ? coordinates.radius + 3 : coordinates.radius) * sx;
     return (
@@ -53,11 +86,11 @@ function ReadOnlyHotspot({ hotspot, scale }) {
         {isHovering && (
           <>
             <Rect
-              x={coordinates.x * sx + 18} y={coordinates.y * sy - 16}
-              width={word.length * 9 + 12} height={22}
+              x={labelX} y={labelY}
+              width={labelW} height={labelH}
               fill="#222" cornerRadius={4} opacity={0.85}
             />
-            <Text x={coordinates.x * sx + 24} y={coordinates.y * sy - 12} text={word} fontSize={14} fill="#fff"
+            <Text x={labelX + 6} y={labelY + 4} text={word} fontSize={14} fill="#fff"
               fontStyle="bold" />
           </>
         )}
@@ -76,11 +109,11 @@ function ReadOnlyHotspot({ hotspot, scale }) {
       {isHovering && (
         <>
           <Rect
-            x={(coordinates.x + coordinates.width) * sx + 3} y={coordinates.y * sy - 16}
-            width={word.length * 9 + 12} height={22}
+            x={labelX} y={labelY}
+            width={labelW} height={labelH}
             fill="#222" cornerRadius={4} opacity={0.85}
           />
-          <Text x={(coordinates.x + coordinates.width) * sx + 9} y={coordinates.y * sy - 12} text={word} fontSize={14} fill="#fff"
+          <Text x={labelX + 6} y={labelY + 4} text={word} fontSize={14} fill="#fff"
             fontStyle="bold" />
         </>
       )}
@@ -142,7 +175,7 @@ export default function ReaderCanvas({ hotspots, imageUrl }) {
           )}
 
           {hotspots.map((h) => (
-            <ReadOnlyHotspot key={h.id} hotspot={h} scale={scale} />
+            <ReadOnlyHotspot key={h.id} hotspot={h} scale={scale} canvasW={canvasW} canvasH={canvasH} />
           ))}
         </Layer>
       </Stage>
