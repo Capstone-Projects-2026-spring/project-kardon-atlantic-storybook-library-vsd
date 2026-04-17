@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Stage, Layer, Image as KonvaImage, Circle, Rect, Text } from "react-konva";
 import useImage from "use-image";
+import { speakWord } from "../../services/hotspots";
 
 const DEFAULT_CANVAS_SIZE = { w: 560, h: 400 };
 
@@ -37,6 +38,7 @@ function ReadOnlyHotspot({ hotspot, scale }) {
   const sharedProps = {
     onMouseEnter: () => setIsHovering(true),
     onMouseLeave: () => setIsHovering(false),
+    onClick: () => speakWord(word), //TTS
     fill: isHovering ? "#ff69b4" : "#ff69b4",
     opacity: isHovering ? 0.7 : 0.4,
     stroke: "#ff1493",
