@@ -73,39 +73,6 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
     strokeWidth: isHovering ? 5 : 3,
   };
 
-  // figure out where to stick the label so it doesnt fall off the canvas
-  const labelW = word.length * 9 + 12;
-  const labelH = 22;
-  const MARGIN = 4;
-
-  // edges of the shape in display coords
-  const rightEdge = shape_type === "circle"
-    ? (coordinates.x + coordinates.radius) * sx
-    : (coordinates.x + coordinates.width) * sx;
-  const leftEdge = shape_type === "circle"
-    ? (coordinates.x - coordinates.radius) * sx
-    : coordinates.x * sx;
-  const topEdge = shape_type === "circle"
-    ? (coordinates.y - coordinates.radius) * sy
-    : coordinates.y * sy;
-  const bottomEdge = shape_type === "circle"
-    ? (coordinates.y + coordinates.radius) * sy
-    : (coordinates.y + coordinates.height) * sy;
-
-  // start at the right side, slightly above the top
-  let labelX = rightEdge + 3;
-  let labelY = topEdge - labelH + 4;
-
-  // if its gonna spill off the right, flip it to the left
-  if (labelX + labelW > canvasW - MARGIN) labelX = leftEdge - labelW - 3;
-  // if its still off screen somehow, just clamp it
-  if (labelX < MARGIN) labelX = MARGIN;
-  if (labelX + labelW > canvasW - MARGIN) labelX = canvasW - labelW - MARGIN;
-
-  // if the label is off the top, drop it below the shape
-  if (labelY < MARGIN) labelY = bottomEdge + MARGIN;
-  if (labelY + labelH > canvasH - MARGIN) labelY = canvasH - labelH - MARGIN;
-
   if (shape_type === "circle") {
     const r = (isHovering ? coordinates.radius + 3 : coordinates.radius) * sx;
     return (
