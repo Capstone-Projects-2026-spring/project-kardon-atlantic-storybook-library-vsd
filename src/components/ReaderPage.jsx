@@ -43,15 +43,18 @@ function ReaderPage({ onBack, pageData }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  // fullscreen mode - image takes entire screen (no hotspots in fullscreen for now)
+  // fullscreen mode — show the canvas so hotspots still work
   if (isFullscreen) {
     return (
       <div className="readerFullscreen">
-        <img
-          src={imageUrl}
-          alt={`Page ${currentPage + 1}`}
-          className="readerFullscreenImg"
-        />
+        {/* canvas fills the whole screen, hotspots and labels included */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {imageUrl ? (
+            <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} />
+          ) : (
+            <div className="readerText">No pages available.</div>
+          )}
+        </div>
 
         {/* page switcher floats at the bottom */}
         {totalPages > 1 && (
