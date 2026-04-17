@@ -1,4 +1,7 @@
-function MenuPage({ onOpenLibrary, onEditStorybooks }) {
+function MenuPage({ onOpenLibrary, onEditStorybooks, recentBooks = [], onOpenRecent }) {
+  // always 3 slots so the layout doesnt shift around
+  const slots = [0, 1, 2].map((i) => recentBooks[i] || null);
+
   return (
     <div className="menuPage">
 
@@ -25,18 +28,50 @@ function MenuPage({ onOpenLibrary, onEditStorybooks }) {
       <div className="recentBar">
         <p className="recentBarTitle">Recently Viewed</p>
         <div className="recentBarBooks">
-          <div className="recentBookSlot">
-            <div className="recentBookCover" />
-            <p className="recentBookName">Book title</p>
-          </div>
-          <div className="recentBookSlot">
-            <div className="recentBookCover" />
-            <p className="recentBookName">Book title</p>
-          </div>
-          <div className="recentBookSlot">
-            <div className="recentBookCover" />
-            <p className="recentBookName">Book title</p>
-          </div>
+          {slots.map((book, i) => {
+            // pick a cover: explicit cover_image_url first, then fall back to page 1
+            const cover = book
+              ? book.cover_image_url || book.pages?.[0]?.image_url || null
+              : null;
+
+            // only filled tiles are clickable — clicking opens the book in reader mode
+            const clickable = !!book && typeof onOpenRecent === "function";
+
+            return (
+              <div
+                key={book ? book.id : `empty-${i}`}
+                className="recentBookSlot"
+                onClick={clickable ? () => onOpenRecent(book.id) : undefined}
+                onKeyDown={
+                  clickable
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onOpenRecent(book.id);
+                        }
+                      }
+                    : undefined
+                }
+                role={clickable ? "button" : undefined}
+                tabIndex={clickable ? 0 : undefined}
+                style={clickable ? { cursor: "pointer" } : undefined}
+              >
+                <div
+                  className="recentBookCover"
+                  style={
+                    cover
+                      ? {
+                          backgroundImage: `url(${cover})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : undefined
+                  }
+                />
+                <p className="recentBookName">{book ? book.title : ""}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
