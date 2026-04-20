@@ -208,8 +208,8 @@ function EditorPage({ onBack, pageData }) {
         <div className="editorRight">
           {/* shape mode picker */}
           <div className="toolSection">
-            <p className="toolLabel" style={{ color: "#222" }}>Draw Hotspot</p>
-            <p style={{ margin: 0, color: "rgba(0,0,0,0.45)", fontSize: "0.8rem" }}>
+            <p className="toolLabel">Draw Hotspot</p>
+            <p style={{ margin: 0, fontSize: "0.8rem", opacity: 0.6 }}>
               Click & drag on the image to create a hotspot
             </p>
             <div style={{ display: "flex", gap: 8 }}>
@@ -233,7 +233,7 @@ function EditorPage({ onBack, pageData }) {
           {/* hotspot list */}
           {pageHotspots.length > 0 && (
             <div className="toolSection">
-              <p className="toolLabel" style={{ color: "#222" }}>Hotspots on this page ({pageHotspots.length})</p>
+              <p className="toolLabel">Hotspots on this page ({pageHotspots.length})</p>
               <div className="hotspotList">
                 {pageHotspots.map((h) => (
                   <div
@@ -245,7 +245,7 @@ function EditorPage({ onBack, pageData }) {
                       border: selectedId === h.id ? "1px solid #6d6af0" : "1px solid transparent",
                     }}
                   >
-                    <span style={{ color: "#222" }}>{h.word} ({Math.round(h.coordinates.x)}, {Math.round(h.coordinates.y)})</span>
+                    <span>{h.word} ({Math.round(h.coordinates.x)}, {Math.round(h.coordinates.y)})</span>
                     <button className="removeBtn" onClick={(e) => { e.stopPropagation(); handleDelete(h.id); }}>
                       ✕
                     </button>
@@ -258,7 +258,7 @@ function EditorPage({ onBack, pageData }) {
           {/* selected hotspot editor */}
           {selectedHotspot && (
             <div className="toolSection">
-              <p className="toolLabel" style={{ color: "#222" }}>Edit Hotspot</p>
+              <p className="toolLabel">Edit Hotspot</p>
               <input
                 className="wordInput"
                 type="text"
@@ -266,7 +266,7 @@ function EditorPage({ onBack, pageData }) {
                 value={selectedHotspot.word}
                 onChange={(e) => handleUpdateWord(e.target.value)}
               />
-              <label style={{ color: "rgba(0,0,0,0.7)", fontSize: "0.85rem" }}>
+              <label style={{ fontSize: "0.85rem", opacity: 0.8 }}>
                 Size
                 <input
                   type="range" min="10" max="200"
@@ -289,7 +289,7 @@ function EditorPage({ onBack, pageData }) {
 
           {/* comment section */}
           <div className="toolSection">
-            <p className="toolLabel" style={{ color: "#222" }}>Page Comment (optional)</p>
+            <p className="toolLabel">Page Comment (optional)</p>
             <textarea
               className="commentBox"
               placeholder="leave a note for yourself or other editors..."

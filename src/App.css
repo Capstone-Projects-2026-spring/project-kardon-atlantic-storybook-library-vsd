@@ -1358,3 +1358,286 @@
 .bookMenuAction:hover {
   background: rgba(128, 156, 214, 0.2);
 }
+
+/* ---- dark mode background ---- */
+.darkMode .appBg {
+  background: 
+    linear-gradient(
+      to top,
+      rgba(100, 160, 255, 0.25) 0%,
+      rgba(120, 180, 255, 0.12) 35%,
+      transparent 60%
+    ),
+    linear-gradient(160deg, #04060d 0%, #080d1a 50%, #0d1020 100%);
+}
+
+/* top left scattered stars */
+.darkMode .appBg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.85), transparent),
+    radial-gradient(2px 2px at 18% 8%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 25% 22%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 55% 18%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 65% 8%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 72% 25%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 30% 35%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 48% 30%, rgba(255,255,255,0.5), transparent);
+  pointer-events: none;
+}
+
+/* bottom right star cluster + soft glow */
+.darkMode .appBg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    /* soft warm glow bottom right */
+    radial-gradient(260px 260px at 92% 88%, rgba(180,210,255,0.35) 0%, transparent 70%),
+    /* bottom right stars */
+    radial-gradient(2px 2px at 80% 75%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 85% 80%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 90% 70%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 88% 90%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 95% 78%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 78% 92%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 92% 82%, rgba(255,255,255,0.6), transparent);
+  pointer-events: none;
+}
+
+/* ---- dark mode header ---- */
+.darkMode .headerBar {
+  background: rgba(4, 6, 13, 0.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.darkMode .appTitle {
+  color: rgba(255,255,255,0.92);
+}
+
+.darkMode .iconBtn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.darkMode .iconBtn:hover {
+  background: rgba(255,255,255,0.13);
+}
+
+/* ---- dark mode menu text ---- */
+.darkMode .menuTitle {
+  color: #e8e0ff !important;
+  text-shadow:
+    1px 1px 0px #a5a6c7,
+    2px 2px 0px #7070a8,
+    3px 3px 0px #505090,
+    4px 4px 0px #303070,
+    5px 5px 12px rgba(0,0,0,0.8) !important;
+}
+
+.darkMode .menuSubtitle {
+  color: rgba(255,255,255,0.55);
+}
+
+.darkMode .menuBtnLabel {
+  color: rgba(255,255,255,0.92);
+}
+
+.darkMode .menuActionPrimary .menuBtnLabel {
+  color: rgba(255,255,255,0.92);
+}
+
+.darkMode .menuBtnSub {
+  color: rgba(255,255,255,0.5);
+}
+
+.darkMode .menuActionPrimary .menuBtnSub {
+  color: rgba(255,255,255,0.5);
+}
+
+/* ---- dark mode buttons ---- */
+.darkMode .menuActionPrimary {
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.darkMode .menuActionSecondary {
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.darkMode .menuActionBtn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ---- dark mode recently viewed ---- */
+.darkMode .recentBar {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.darkMode .recentBarTitle {
+  color: rgba(255,255,255,0.75);
+}
+
+.darkMode .recentBookName {
+  color: rgba(255,255,255,0.35);
+}
+
+.darkMode .recentBookCover {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ---- dark mode library ---- */
+.darkMode .pageTitle {
+  color: rgba(255,255,255,0.92);
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.darkMode .backBtn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .backBtn:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
+
+.darkMode .modePill {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .uploadBtn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .bookCard {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.darkMode .bookCard:hover {
+  background: rgba(255,255,255,0.09);
+}
+
+.darkMode .bookTitle {
+  color: rgba(255,255,255,0.85);
+}
+
+/* ---- dark mode editor/settings ---- */
+.darkMode .toolSection {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.darkMode .toolLabel {
+  color: rgba(255,255,255,0.95);
+  font-size: 1rem;
+}
+.darkMode .toolSection p {
+  color: rgba(255,255,255,0.6);
+}
+
+.darkMode .hotspotTag {
+  background: rgba(109,106,240,0.25);
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(109,106,240,0.35);
+}
+
+.darkMode .removeBtn {
+  color: rgba(255,255,255,0.5);
+}
+
+.darkMode .pageTitle {
+  color: rgba(255,255,255,0.95) !important;
+}
+
+.darkMode .pageBtn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .pageCount {
+  color: rgba(255,255,255,0.6);
+}
+
+.darkMode .bigBtn {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.9);
+}
+
+.darkMode .bigBtnPrimary {
+  background: #6d6af0;
+  color: white;
+}
+
+.darkMode .wordInput {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.9);
+}
+
+.darkMode .commentBox {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.9);
+}
+
+/* ---- dark mode modal ---- */
+.darkMode .modalBox {
+  background: rgba(8,13,26,0.97);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.darkMode .modalTitle {
+  color: rgba(255,255,255,0.92);
+}
+
+.darkMode .modalSubtitle {
+  color: rgba(255,255,255,0.5);
+}
+
+.darkMode .modalLabel {
+  color: rgba(255,255,255,0.75);
+}
+
+.darkMode .modalInput {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.9);
+}
+
+.darkMode .modalBtnSecondary {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .modalFileName {
+  color: rgba(255,255,255,0.85);
+}
+
+.darkMode .modalNoFiles {
+  color: rgba(255,255,255,0.45);
+}
