@@ -68,7 +68,7 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
     onMouseLeave: () => setIsHovering(false),
     onClick: () => speakWord(word), //TTS
     fill: isHovering ? "#ff69b4" : "#ff69b4",
-    opacity: isHovering ? 0.7 : 0.4,
+    opacity: isHovering ? 0.4 : 0.15,
     stroke: "#ff1493",
     strokeWidth: isHovering ? 5 : 3,
   };
