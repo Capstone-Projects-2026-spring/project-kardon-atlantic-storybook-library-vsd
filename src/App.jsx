@@ -3,6 +3,7 @@ import "./App.css";
 import { useAuth } from "./context/AuthContext";
 import { createBook, deleteBook, getMyBooks } from "./services/books";
 import { createPage, getPagesByBookId } from "./services/pages";
+import { addRecent, getRecents } from "./lib/recents";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SettingsPage from "./components/SettingsPage";
 import HeaderBar from "./components/HeaderBar";
@@ -30,6 +31,25 @@ function App() {
 
   const [books, setBooks] = useState([]);
   const [activeBookIndex, setActiveBookIndex] = useState(null);
+  const [recentIds, setRecentIds] = useState([]);
+
+  // pull the saved recents list whenever the user logs in
+  useEffect(() => {
+    if (user) setRecentIds(getRecents(user.id));
+    else setRecentIds([]);
+  }, [user]);
+
+  // match ids against the actual book objects, skip any that no longer exist
+  const recentBooks = recentIds
+    .map((id) => books.find((b) => b.id === id))
+    .filter(Boolean);
+
+  // bump a book to the top of the recents when its opened in reader mode
+  const markBookAsViewed = (bookId) => {
+    if (!user || !bookId) return;
+    addRecent(user.id, bookId);
+    setRecentIds(getRecents(user.id));
+  };
 
   // Fetch books from Supabase whenever the user logs in
   const fetchBooks = useCallback(async () => {
@@ -151,6 +171,15 @@ function App() {
             <MenuPage
               onOpenLibrary={goReaderLibrary}
               onEditStorybooks={goEditLibrary}
+              recentBooks={recentBooks}
+              onOpenRecent={(bookId) => {
+                const idx = books.findIndex((b) => b.id === bookId);
+                if (idx === -1) return;
+                setActiveBookIndex(idx);
+                setMode("read");
+                markBookAsViewed(bookId); // keeps it at the top of recents
+                setPage("reader");
+              }}
             />
           )}
 
@@ -164,6 +193,11 @@ function App() {
               }}
               onOpenBook={(index) => {
                 setActiveBookIndex(index);
+                // only reader-mode opens count as "viewed"
+                if (mode === "read") {
+                  const book = books[index];
+                  if (book?.id) markBookAsViewed(book.id);
+                }
                 setPage(mode === "read" ? "reader" : "editor");
               }}
               onBookUploaded={addBook}
