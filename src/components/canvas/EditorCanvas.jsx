@@ -96,7 +96,7 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
     onClick: () => onSelect(id),
     onDragEnd: handleDragEnd,
     fill: "#6d6af0",
-    opacity: isHovering ? 0.4 : 0.15,
+    opacity: isHovering ? 0.75 : 0.55,
     stroke: "#4a47c0",
     strokeWidth: isHovering ? 3 : 2,
   };
