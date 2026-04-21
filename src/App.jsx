@@ -201,6 +201,7 @@ function App() {
                 setPage(mode === "read" ? "reader" : "editor");
               }}
               onBookUploaded={addBook}
+              onBooksChanged={fetchBooks}
             />
           )}
 
