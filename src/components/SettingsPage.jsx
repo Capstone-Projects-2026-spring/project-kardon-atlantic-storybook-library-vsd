@@ -174,7 +174,8 @@ function SettingsPage({ onBack }) {
           </span>
 
         {/* toggle switch */}
-        <div
+        <button
+          type="button"
           onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
           style={{
             width: "48px",
@@ -183,7 +184,10 @@ function SettingsPage({ onBack }) {
             background: theme === "dark" ? "#6d6af0" : "rgba(0,0,0,0.15)",
             position: "relative",
             cursor: "pointer",
+            border: "none",
+            padding: 0,
             transition: "background 0.25s ease",
+            touchAction: "manipulation",
           }}
         >
           {/* sliding circle */}
@@ -198,7 +202,7 @@ function SettingsPage({ onBack }) {
             transition: "left 0.25s ease",
             boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
           }} />
-        </div>
+        </button>
       </div>
     </div>
   )}

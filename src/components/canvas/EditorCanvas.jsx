@@ -34,7 +34,7 @@ function clampPoint(point, width, height) {
 /* ---- individual hotspot rendered on the Konva canvas ---- */
 
 function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const { id, word, coordinates, shape_type } = hotspot;
 
   const sx = scale;
@@ -91,22 +91,26 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
 
   const sharedProps = {
     draggable: true,
-    onMouseEnter: () => setIsHovering(true),
-    onMouseLeave: () => setIsHovering(false),
+    onMouseEnter: () => setIsActive(true),
+    onMouseLeave: () => setIsActive(false),
     onClick: () => onSelect(id),
+    onTap: () => {
+      onSelect(id),
+      setIsActive((prev) => !prev);
+    },
     onDragEnd: handleDragEnd,
     fill: "#6d6af0",
-    opacity: isHovering ? 0.75 : 0.55,
+    opacity: isActive ? 0.75 : 0.55,
     stroke: "#4a47c0",
-    strokeWidth: isHovering ? 3 : 2,
+    strokeWidth: isActive ? 3 : 2,
   };
 
   if (shape_type === "circle") {
-    const r = (isHovering ? coordinates.radius + 3 : coordinates.radius) * sx;
+    const r = (isActive ? coordinates.radius + 3 : coordinates.radius) * sx;
     return (
       <>
         <Circle x={coordinates.x * sx} y={coordinates.y * sy} radius={r} {...sharedProps} />
-        {isHovering && (
+        {isActive && (
           <>
             <Rect
               x={labelX} y={labelY}
@@ -121,7 +125,7 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
     );
   }
 
-  const off = isHovering ? 3 : 0;
+  const off = isActive ? 3 : 0;
   return (
     <>
       <Rect
@@ -129,7 +133,7 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
         width={coordinates.width * sx + off * 2} height={coordinates.height * sy + off * 2}
         {...sharedProps}
       />
-      {isHovering && (
+      {isActive && (
         <>
           <Rect
             x={labelX} y={labelY}
@@ -234,6 +238,40 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
     setDragCurrent(null);
   };
 
+  // ── Touch equivalents ──
+  function getTouchPos(stage, e) {
+    const touch = e.evt.touches[0] || e.evt.changedTouches[0];
+    const rect = stage.container().getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  }
+
+  const handleTouchStart = (e) => {
+    if (!image) return;
+    if (e.target !== e.target.getStage() && e.target.className !== "Image") return;
+    const stage = e.target.getStage();
+    const pos = getTouchPos(stage, e);
+    const clamped = clampPoint(pos, canvasW, canvasH);
+    setIsDragging(true);
+    setDragStart(clamped);
+    setDragCurrent(clamped);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !dragStart) return;
+    e.evt.preventDefault();
+    const stage = e.target.getStage();
+    const pos = getTouchPos(stage, e);
+    setDragCurrent(clampPoint(pos, canvasW, canvasH));
+  };
+
+  const handleTouchEnd = () => {
+    handleMouseUp();
+  };
+
+
   // drag preview shape (in display coords)
   const preview = isDragging && dragStart && dragCurrent
     ? shapeMode === "circle"
@@ -251,7 +289,10 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        style={{ cursor: isDragging ? "crosshair" : "default" }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove} 
+        onTouchEnd={handleTouchEnd}
+        style={{ cursor: isDragging ? "crosshair" : "default" }}      
       >
         <Layer>
           {image && <KonvaImage image={image} width={canvasW} height={canvasH} listening={false} />}
