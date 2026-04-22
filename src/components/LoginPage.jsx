@@ -141,8 +141,9 @@ function LoginPage({ onEnter }) {
           {isSignup ? (
             <p style={{ fontSize: "0.9rem", color: "#2a4a6b" }}>
               Already have an account?{" "}
-              <span
-                style={{ color: "#6d6af0", cursor: "pointer" }}
+              <button
+                type="button"
+                style={{ color: "#6d6af0", cursor: "pointer", background: "none", border: "none", padding: 0, fontSize: "inherit" }}
                 onClick={() => {
                   setIsSignup(false);
                   setError(null);
@@ -150,20 +151,21 @@ function LoginPage({ onEnter }) {
                 }}
               >
                 Login
-              </span>
+              </button>
             </p>
           ) : (
             <p style={{ fontSize: "0.9rem", color: "#2a4a6b" }}>
               Don't have an account?{" "}
-              <span
-                style={{ color: "#6d6af0", cursor: "pointer" }}
+              <button
+                type="button"
+                style={{ color: "#6d6af0", cursor: "pointer", background: "none", border: "none", padding: 0, fontSize: "inherit" }}
                 onClick={() => {
                   setIsSignup(true);
                   setError(null);
                 }}
               >
                 Sign up
-              </span>
+              </button>
             </p>
           )}
         </div>

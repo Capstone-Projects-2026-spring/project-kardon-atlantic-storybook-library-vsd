@@ -28,7 +28,7 @@ function getCanvasMetrics(containerSize, image) {
 /* ---- read-only hotspot rendered on the Konva canvas ---- */
 
 function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const { word, coordinates, shape_type } = hotspot;
 
   // Scale coordinates to match displayed image size
@@ -64,21 +64,28 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
   if (labelY + labelH > canvasH - MARGIN) labelY = canvasH - labelH - MARGIN;
 
   const sharedProps = {
-    onMouseEnter: () => setIsHovering(true),
-    onMouseLeave: () => setIsHovering(false),
-    onClick: () => speakWord(word), //TTS
+    onMouseEnter: () => setIsActive(true),
+    onMouseLeave: () => setIsActive(false),
+    onClick: () => {
+      speakWord(word), //TTS
+      setIsActive(true)
+    },
+    onTap: () => {
+      speakWord(word),
+      setIsActive((prev) => !prev);
+    }, 
     fill: "transparent",
     stroke: "#ff1493",
-    strokeWidth: isHovering ? 3 : 2,
-    opacity: isHovering ? 0.8 : 0.4,
+    strokeWidth: isActive ? 3 : 2,
+    opacity: isActive ? 0.8 : 0.4,
   };
 
   if (shape_type === "circle") {
-    const r = (isHovering ? coordinates.radius + 3 : coordinates.radius) * sx;
+    const r = (isActive ? coordinates.radius + 3 : coordinates.radius) * sx;
     return (
       <>
         <Circle x={coordinates.x * sx} y={coordinates.y * sy} radius={r} {...sharedProps} />
-        {isHovering && (
+        {isActive && (
           <>
             <Rect
               x={labelX} y={labelY}
@@ -93,7 +100,7 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
     );
   }
 
-  const off = isHovering ? 3 : 0;
+  const off = isActive ? 3 : 0;
   return (
     <>
       <Rect
@@ -101,7 +108,7 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
         width={coordinates.width * sx + off * 2} height={coordinates.height * sy + off * 2}
         {...sharedProps}
       />
-      {isHovering && (
+      {isActive && (
         <>
           <Rect
             x={labelX} y={labelY}
