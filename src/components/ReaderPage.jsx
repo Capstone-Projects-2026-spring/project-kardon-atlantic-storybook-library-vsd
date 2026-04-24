@@ -10,6 +10,7 @@ function ReaderPage({ onBack, pageData }) {
   const currentPageObj = pageData[currentPage];
   const imageUrl = currentPageObj?.image_url;
   const pageId = currentPageObj?.id;
+  const bookId = currentPageObj?.book_id;
 
   // Load hotspots for the current page
   const loadHotspots = useCallback(async () => {
@@ -50,7 +51,7 @@ function ReaderPage({ onBack, pageData }) {
         {/* canvas fills the whole screen, hotspots and labels included */}
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {imageUrl ? (
-            <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} />
+            <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} pageId={pageId} bookId={bookId} />
           ) : (
             <div className="readerText">No pages available.</div>
           )}
@@ -111,7 +112,7 @@ function ReaderPage({ onBack, pageData }) {
         style={{ overflow: "hidden", padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         {imageUrl ? (
-          <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} />
+          <ReaderCanvas hotspots={hotspots} imageUrl={imageUrl} pageId={pageId} bookId={bookId} />
         ) : (
           <div className="readerText">No pages available.</div>
         )}

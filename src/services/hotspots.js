@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { logHotspotTtsError } from '../logger'
 
 // Create a hotspot on a page
 export async function createHotspot({ pageId, word, coordinates, shapeType }) {
@@ -76,33 +77,39 @@ export async function deleteHotspotsByPageId(pageId) {
 // TTS
 let currentAudio = null
 
-export async function speakWord(word) {
+export async function speakWord(word, { hotspotId } = {}) {
   if (currentAudio) {
     currentAudio.pause()
     currentAudio = null
   }
 
-  const { data: { session } } = await supabase.auth.getSession()
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
 
-  const resp = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tts`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify({ word }),
+    const resp = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tts`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ word }),
+      }
+    )
+
+    if (!resp.ok) {
+      console.error("speakWord failed:", resp.status)
+      logHotspotTtsError({ hotspotId, word, errorMessage: `HTTP ${resp.status}` })
+      return
     }
-  )
 
-  if (!resp.ok) {
-    console.error("speakWord failed:", resp.status)
-    return
+    const blob = await resp.blob()
+    currentAudio = new Audio(URL.createObjectURL(blob))
+    currentAudio.play()
+  } catch (err) {
+    console.error("speakWord threw:", err)
+    logHotspotTtsError({ hotspotId, word, errorMessage: err?.message ?? String(err) })
   }
-
-  const blob = await resp.blob()
-  currentAudio = new Audio(URL.createObjectURL(blob))
-  currentAudio.play()
 }

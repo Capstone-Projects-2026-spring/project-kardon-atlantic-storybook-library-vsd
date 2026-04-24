@@ -8,6 +8,11 @@ import {
 } from "../services/hotspots";
 import { createComment } from "../services/comments";
 import { supabase } from "../supabaseClient";
+import {
+  logHotspotCreate,
+  logHotspotEdit,
+  logHotspotDelete,
+} from "../logger";
 
 function EditorPage({ onBack, pageData }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +20,7 @@ function EditorPage({ onBack, pageData }) {
   const currentPageObj = pageData[currentPage - 1];
   const imageUrl = currentPageObj?.image_url;
   const pageId = currentPageObj?.id;
+  const bookId = currentPageObj?.book_id;
 
   const [hotspots, setHotspots] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -71,21 +77,52 @@ function EditorPage({ onBack, pageData }) {
     };
     setHotspots((prev) => [...prev, newHotspot]);
     setSelectedId(data.id);
+    logHotspotCreate({
+      hotspotId: data.id,
+      pageId,
+      bookId,
+      word: data.word,
+      shapeType: data.shape_type,
+      coordinates: data.coordinates,
+    });
   };
 
   const handleSelect = (id) => setSelectedId(id);
 
   const handleMove = async (id, newCoords) => {
+    const moved = hotspots.find((h) => h.id === id);
     setHotspots(hotspots.map((h) => (h.id === id ? { ...h, coordinates: newCoords } : h)));
     const { error } = await updateHotspot(id, { coordinates: newCoords });
-    if (error) console.error("Failed to update hotspot position:", error.message);
+    if (error) {
+      console.error("Failed to update hotspot position:", error.message);
+      return;
+    }
+    logHotspotEdit({
+      hotspotId: id,
+      pageId,
+      bookId,
+      word: moved?.word,
+      shapeType: moved?.shape_type,
+      coordinates: newCoords,
+    });
   };
 
   const handleUpdateWord = async (word) => {
     if (!selectedId) return;
     setHotspots(hotspots.map((h) => (h.id === selectedId ? { ...h, word } : h)));
     const { error } = await updateHotspot(selectedId, { word });
-    if (error) console.error("Failed to update hotspot word:", error.message);
+    if (error) {
+      console.error("Failed to update hotspot word:", error.message);
+      return;
+    }
+    logHotspotEdit({
+      hotspotId: selectedId,
+      pageId,
+      bookId,
+      word,
+      shapeType: selectedHotspot?.shape_type,
+      coordinates: selectedHotspot?.coordinates,
+    });
   };
 
   const handleUpdateSize = async (size) => {
@@ -100,14 +137,35 @@ function EditorPage({ onBack, pageData }) {
     }
     setHotspots(hotspots.map((h) => (h.id === selectedId ? { ...h, coordinates: newCoords } : h)));
     const { error } = await updateHotspot(selectedId, { coordinates: newCoords });
-    if (error) console.error("Failed to update hotspot size:", error.message);
+    if (error) {
+      console.error("Failed to update hotspot size:", error.message);
+      return;
+    }
+    logHotspotEdit({
+      hotspotId: selectedId,
+      pageId,
+      bookId,
+      word: selectedHotspot.word,
+      shapeType: selectedHotspot.shape_type,
+      coordinates: newCoords,
+    });
   };
 
   const handleDelete = async (id) => {
+    const removed = hotspots.find((h) => h.id === id);
     setHotspots(hotspots.filter((h) => h.id !== id));
     if (selectedId === id) setSelectedId(null);
     const { error } = await deleteHotspot(id);
-    if (error) console.error("Failed to delete hotspot:", error.message);
+    if (error) {
+      console.error("Failed to delete hotspot:", error.message);
+      return;
+    }
+    logHotspotDelete({
+      hotspotId: id,
+      pageId,
+      bookId,
+      word: removed?.word,
+    });
   };
 
   function goNextPage() {

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Stage, Layer, Image as KonvaImage, Circle, Rect, Text } from "react-konva";
 import useImage from "use-image";
 import { speakWord } from "../../services/hotspots";
+import { logHotspotClick } from "../../logger";
 
 const DEFAULT_CANVAS_SIZE = { w: 560, h: 400 };
 
@@ -27,9 +28,9 @@ function getCanvasMetrics(containerSize, image) {
 
 /* ---- read-only hotspot rendered on the Konva canvas ---- */
 
-function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
+function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH, pageId, bookId }) {
   const [isActive, setIsActive] = useState(false);
-  const { word, coordinates, shape_type } = hotspot;
+  const { id: hotspotId, word, coordinates, shape_type } = hotspot;
 
   // Scale coordinates to match displayed image size
   const sx = scale;
@@ -67,13 +68,15 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
     onMouseEnter: () => setIsActive(true),
     onMouseLeave: () => setIsActive(false),
     onClick: () => {
-      speakWord(word), //TTS
-      setIsActive(true)
+      logHotspotClick({ hotspotId, pageId, bookId, word });
+      speakWord(word, { hotspotId }); //TTS
+      setIsActive(true);
     },
     onTap: () => {
-      speakWord(word),
+      logHotspotClick({ hotspotId, pageId, bookId, word });
+      speakWord(word, { hotspotId });
       setIsActive((prev) => !prev);
-    }, 
+    },
     fill: "transparent",
     stroke: "#ff1493",
     strokeWidth: isActive ? 3 : 2,
@@ -125,7 +128,7 @@ function ReadOnlyHotspot({ hotspot, scale, canvasW, canvasH }) {
 
 /* ---- main read-only canvas ---- */
 
-export default function ReaderCanvas({ hotspots, imageUrl }) {
+export default function ReaderCanvas({ hotspots, imageUrl, pageId, bookId }) {
   const [image, imageStatus] = useImage(imageUrl, "anonymous");
   const containerRef = useRef(null);
   const [containerSize, setContainerSize] = useState(DEFAULT_CANVAS_SIZE);
@@ -177,7 +180,7 @@ export default function ReaderCanvas({ hotspots, imageUrl }) {
           )}
 
           {hotspots.map((h) => (
-            <ReadOnlyHotspot key={h.id} hotspot={h} scale={scale} canvasW={canvasW} canvasH={canvasH} />
+            <ReadOnlyHotspot key={h.id} hotspot={h} scale={scale} canvasW={canvasW} canvasH={canvasH} pageId={pageId} bookId={bookId} />
           ))}
         </Layer>
       </Stage>

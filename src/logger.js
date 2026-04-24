@@ -1,50 +1,109 @@
-// This file handles logging for the VSD Storybook app.
-// "Logging" just means recording what's happening so developers can debug.
-// Every important user action gets logged with a timestamp.
+// Hotspot activity logger — writes structured rows to the `hotspot_logs`
+// table in Supabase. All writes are fire-and-forget: a logging failure must
+// never block reading or editing.
 
-const LOG_LEVELS = {
-  INFO: "INFO",
-  WARN: "WARN",
-  ERROR: "ERROR",
-};
+import { supabase } from "./lib/supabase";
 
-function log(level, message, data = null) {
-  const timestamp = new Date().toISOString(); 
-  const prefix = `[${timestamp}] [${level}]`;
+const TABLE = "hotspot_logs";
 
-  if (data) {
-    console.log(`${prefix} ${message}`, data);
-  } else {
-    console.log(`${prefix} ${message}`);
+const SESSION_ID =
+  typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+async function currentUserId() {
+  try {
+    const { data } = await supabase.auth.getUser();
+    return data?.user?.id ?? null;
+  } catch {
+    return null;
   }
 }
 
-// specific logging functions from the documentation:
-
-export function logLogin(userId) {
-  log(LOG_LEVELS.INFO, `User logged in`, { userId });
+async function insertLog(row) {
+  try {
+    const user_id = await currentUserId();
+    const payload = {
+      user_id,
+      session_id: SESSION_ID,
+      ...row,
+    };
+    const { error } = await supabase.from(TABLE).insert(payload);
+    if (error) {
+      console.warn("[logger] insert failed:", error.message);
+    } else if (import.meta.env?.DEV) {
+      console.log(`[logger] ${row.event_type}`, payload);
+    }
+  } catch (err) {
+    console.warn("[logger] unexpected error:", err);
+  }
 }
 
-export function logBookUpload(fileName) {
-  log(LOG_LEVELS.INFO, `User uploaded a book: ${fileName}`);
+export function logHotspotClick({ hotspotId, pageId, bookId, word }) {
+  return insertLog({
+    event_type: "hotspot_click",
+    hotspot_id: hotspotId ?? null,
+    page_id: pageId ?? null,
+    book_id: bookId ?? null,
+    word: word ?? null,
+  });
 }
 
-export function logPageView(pageNumber) {
-  log(LOG_LEVELS.INFO, `User viewed page ${pageNumber}`);
+export function logHotspotCreate({
+  hotspotId,
+  pageId,
+  bookId,
+  word,
+  shapeType,
+  coordinates,
+}) {
+  return insertLog({
+    event_type: "hotspot_create",
+    hotspot_id: hotspotId ?? null,
+    page_id: pageId ?? null,
+    book_id: bookId ?? null,
+    word: word ?? null,
+    shape_type: shapeType ?? null,
+    coordinates: coordinates ?? null,
+  });
 }
 
-export function logPageFlip(direction) {
-  log(LOG_LEVELS.INFO, `User flipped page: ${direction}`);
+export function logHotspotEdit({
+  hotspotId,
+  pageId,
+  bookId,
+  word,
+  shapeType,
+  coordinates,
+}) {
+  return insertLog({
+    event_type: "hotspot_edit",
+    hotspot_id: hotspotId ?? null,
+    page_id: pageId ?? null,
+    book_id: bookId ?? null,
+    word: word ?? null,
+    shape_type: shapeType ?? null,
+    coordinates: coordinates ?? null,
+  });
 }
 
-export function logHotspotClick(word) {
-  log(LOG_LEVELS.INFO, `User clicked hotspot: "${word}"`);
+export function logHotspotDelete({ hotspotId, pageId, bookId, word }) {
+  return insertLog({
+    event_type: "hotspot_delete",
+    hotspot_id: hotspotId ?? null,
+    page_id: pageId ?? null,
+    book_id: bookId ?? null,
+    word: word ?? null,
+  });
 }
 
-export function logBookSelection(bookTitle) {
-  log(LOG_LEVELS.INFO, `User selected book: "${bookTitle}"`);
+export function logHotspotTtsError({ hotspotId, word, errorMessage }) {
+  return insertLog({
+    event_type: "hotspot_tts_error",
+    hotspot_id: hotspotId ?? null,
+    word: word ?? null,
+    coordinates: errorMessage ? { error: String(errorMessage) } : null,
+  });
 }
 
-export function logError(message, error) {
-  log(LOG_LEVELS.ERROR, message, error);
-}
+export const __SESSION_ID__ = SESSION_ID;
