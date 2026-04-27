@@ -267,7 +267,14 @@ function EditorPage({ onBack, pageData }) {
           {/* shape mode picker */}
           <div className="toolSection">
             <p className="toolLabel">Draw Hotspot</p>
-            <p style={{ margin: 0, fontSize: "0.8rem", opacity: 0.6 }}>
+            <p
+              style={{
+              margin: 0,
+              fontSize: "0.8rem",
+              opacity: 0.7,
+              color: "#5a7a9a"
+              }}
+            >
               Click & drag on the image to create a hotspot
             </p>
             <div style={{ display: "flex", gap: 8 }}>
