@@ -99,10 +99,12 @@ function CanvasHotspot({ hotspot, onSelect, onMove, scale, canvasW, canvasH }) {
       setIsActive((prev) => !prev);
     },
     onDragEnd: handleDragEnd,
-    fill: "#6d6af0",
-    opacity: isActive ? 0.75 : 0.55,
-    stroke: "#4a47c0",
-    strokeWidth: isActive ? 3 : 2,
+      fill: "#ff4fd8",
+      opacity: isActive ? 0.7 : 0.35,
+      stroke: "#ffffff",
+      strokeWidth: isActive ? 4 : 3,
+      shadowColor: "#ff4fd8",
+      shadowBlur: isActive ? 12 : 6,
   };
 
   if (shape_type === "circle") {
@@ -306,17 +308,40 @@ export default function EditorCanvas({ hotspots, shapeMode, currentPage, onHotsp
           )}
 
           {pageHotspots.map((h) => (
-            <CanvasHotspot key={h.id} hotspot={h} onSelect={onSelect} onMove={onMove} scale={scale}
-              canvasW={canvasW} canvasH={canvasH} />
+            <CanvasHotspot
+              key={h.id}
+              hotspot={h}
+              onSelect={onSelect}
+              onMove={onMove}
+              scale={scale}
+              canvasW={canvasW}
+              canvasH={canvasH}
+            />
           ))}
 
           {preview && preview.type === "circle" && (
-            <Circle x={preview.x} y={preview.y} radius={preview.radius}
-              fill="#6d6af0" opacity={0.3} stroke="#6d6af0" strokeWidth={2} />
+            <Circle
+              x={preview.x}
+              y={preview.y}
+              radius={preview.radius}
+              fill="#ff4fd8"
+              opacity={0.35}
+              stroke="#d61bb2"
+              strokeWidth={2}
+            />
           )}
+
           {preview && preview.type === "rect" && (
-            <Rect x={preview.x} y={preview.y} width={preview.width} height={preview.height}
-              fill="#6d6af0" opacity={0.3} stroke="#6d6af0" strokeWidth={2} />
+            <Rect
+              x={preview.x}
+              y={preview.y}
+              width={preview.width}
+              height={preview.height}
+              fill="#ff4fd8"
+              opacity={0.35}
+              stroke="#d61bb2"
+              strokeWidth={2}
+            />
           )}
         </Layer>
       </Stage>
