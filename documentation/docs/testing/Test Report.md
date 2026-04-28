@@ -1,6 +1,5 @@
----
-sidebar_position: 5
----
+# Test Report 
+
 # Purpose
 The Test Report is a record that the tests were run and a documentation of their results.
 
